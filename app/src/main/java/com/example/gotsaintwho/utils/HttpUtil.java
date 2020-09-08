@@ -2,19 +2,37 @@ package com.example.gotsaintwho.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.example.gotsaintwho.MyApplication;
 import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.Base64;
+import com.loopj.android.http.RequestParams;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
+
+import cz.msebera.android.httpclient.Header;
+
+import static android.net.sip.SipErrorCode.TIME_OUT;
+import static android.provider.Telephony.Mms.Part.CHARSET;
 
 public class HttpUtil {
+    private static final String TAG = "HttpUtil";
 
     public static void sendRequestWithHttpURLConnection(final String uriStr, final String jsonStr, final HttpCallbackListener listener) { // 开启线程来发起网络请求
         new Thread(new Runnable() {
@@ -23,7 +41,7 @@ public class HttpUtil {
                 HttpURLConnection connection = null;
                 BufferedReader reader = null;
                 try {
-                    String urlStr = "http://192.168.187.1:8071/" + uriStr;
+                    String urlStr = ParamUtil.URI + uriStr;
                     URL url = new URL(urlStr);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
@@ -75,24 +93,33 @@ public class HttpUtil {
         }).start();
     }
 
-    public static Bitmap getImageBitmap(String url) {
-        URL imgUrl = null;
-        Bitmap bitmap = null;
-        try {
-            imgUrl = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) imgUrl
-                    .openConnection();
-            conn.setDoInput(true);
-            conn.connect();
-            InputStream is = conn.getInputStream();
-            bitmap = BitmapFactory.decodeStream(is);
-            is.close();
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void uploadFile(String userId, String path, String url) throws Exception {
+        File file = new File(path);
+        if (file.exists() && file.length() > 0) {
+            AsyncHttpClient client = new AsyncHttpClient();
+            RequestParams params = new RequestParams();
+            params.put("user_id",userId);
+            params.put("img", file);
+            // 上传文件
+            client.post(url, params, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers,
+                                      byte[] responseBody) {
+                    // 上传成功后要做的工作
+                    Toast.makeText(MyApplication.getContext(), "change has been made", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers,
+                                      byte[] responseBody, Throwable error) {
+                    // 上传失败后要做到工作
+                    Toast.makeText(MyApplication.getContext(), "change image error", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Toast.makeText(MyApplication.getContext(), "image has not been taken", Toast.LENGTH_LONG).show();
         }
-        return bitmap;
+
     }
+
 }

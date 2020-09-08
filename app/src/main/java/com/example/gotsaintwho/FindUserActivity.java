@@ -1,11 +1,14 @@
 package com.example.gotsaintwho;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.gotsaintwho.adapter.ChatItemAdapter;
+import com.example.gotsaintwho.adapter.UserAdapter;
 import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
 import com.example.gotsaintwho.fragment.ChatListFragment;
 import com.example.gotsaintwho.pojo.ChatItem;
@@ -28,10 +32,11 @@ public class FindUserActivity extends AppCompatActivity {
 
     private static final String TAG = "FindUserActivity";
     EditText usernameEditText;
-    ListView userListView;
+    RecyclerView userRecyclerView;
     Button findUserButton;
-    List<User> userList = null;
-    List<User> userListFromDb = null;
+    List<User> userList = new ArrayList<>();
+    UserAdapter userAdapter;
+    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,24 +44,20 @@ public class FindUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_find_user);
 
         usernameEditText = findViewById(R.id.usernameEditText);
-        userListView = findViewById(R.id.userListView);
+        userRecyclerView = findViewById(R.id.user_recycler_view);
         findUserButton = findViewById(R.id.findUserButton);
 
         //先从数据库里查出所有用户
-        userListFromDb = DBUtil.findAllUser();
+        //userListFromDb = DBUtil.findAllUser();
+        //设定cyclerView的layoutManager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        userRecyclerView.setLayoutManager(layoutManager);
 
-     /*   UserAdapter userAdapter = new UserAdapter(FindUserActivity.this, R.layout.item_user_list, userList);
-        userListView.setAdapter(userAdapter);
-        userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                User user = userList.get(i);
-                //TODO 还要防止这个用户是已添加好友和寄几
-                //点击后把这个用户存起来，表示好友添加成功
-                DBUtil.saveUser(user);
-            }
-        });
+        //从Intent中拿出user
+        currentUser = (User) getIntent().getSerializableExtra("user_info");
 
+        userAdapter = new UserAdapter(userList);
+        userRecyclerView.setAdapter(userAdapter);
 
         findUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,26 +67,43 @@ public class FindUserActivity extends AppCompatActivity {
                     Toast.makeText(FindUserActivity.this, "Please enter the username", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //封装一个要查找的user对象
+                //封装一个要查找的user对象发送给服务器
                 User user = new User();
                 user.setUsername(username);
 
-                //向服务器寻找
+                //向服务器寻找匹配的用户
                 HttpUtil.sendRequestWithHttpURLConnection("user/findUserByUsername", JsonUtil.user2Json(user), new HttpCallbackListener() {
-
                     @Override
                     public void onFinish(String response) {
-                        userList = JsonUtil.json2UserList(response);
-                        Log.e(TAG, "userList==================> "+ userList );
+                        List<User> users= JsonUtil.json2UserList(response);
+                        //数据改变后，刷新页面
+                        userList.clear();
+                        for (User user:users){
+                            if(user.getUserId().equals(currentUser.getUserId())) continue;
+                            //防止把当前用户放到待加好友中！
+                            userList.add(user);
+                        }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                userAdapter.notifyDataSetChanged();
+                            }
+                        });
+                        Log.e(TAG, "userList==================> "+ userList);
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        Toast.makeText(FindUserActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(FindUserActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
             }
         });
-    */
     }
 }

@@ -6,7 +6,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +21,7 @@ import android.widget.EditText;
 
 import com.example.gotsaintwho.adapter.MsgAdapter;
 import com.example.gotsaintwho.dialogue.DialogueQueue;
+import com.example.gotsaintwho.fragment.ChatListFragment;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
 import com.example.gotsaintwho.pojo.Msg;
 import com.example.gotsaintwho.pojo.MsgDBPojo;
@@ -30,21 +34,58 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DialogueActivity extends AppCompatActivity {
+public class DialogueActivity extends BaseActivity {
 
-    public static final int UPDATE_ADAPTER = 1;
-    //private List<Msg> msgList = new ArrayList<>();
-    //第一个参数是TargetUserId,第二个参数是userId与TargetUserId的聊天内容
-    public static Map<String, List<Msg>> msgListMap = new ConcurrentHashMap<>();
     private static List<Msg> msgs;
 
     private EditText inputText;
     private Button send;
-    public static RecyclerView msgRecyclerView;
-    public static String currentTargetUserId;
-    public static MsgAdapter adapter;
+    private RecyclerView msgRecyclerView;
+    //public static String currentTargetUserId;
+    private MsgAdapter adapter;
     private User user = null;
     private User targetUser = null;
+
+    private MsgReceiver msgReceiver;
+
+    //定义一个广播接收器用来接收新消息
+    class MsgReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Toast.makeText(context, "new msg received", Toast.LENGTH_SHORT).show();
+            //一旦接收到消息传递的广播，就刷新页面！
+            adapter.notifyItemInserted(msgs.size() - 1); // 当有新消息时， 刷新RecyclerView中的显示
+            msgRecyclerView.scrollToPosition(msgs.size() - 1); // 将 RecyclerView定位到最后一行
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //重置为null
+        currentTargetUserId = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        /**
+         * resume后开始监听广播
+         */
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.example.gotsaintwho.ReceiveMsg");
+        msgReceiver = new MsgReceiver();
+        registerReceiver(msgReceiver, intentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(msgReceiver!= null){
+            //退出后就取消对广播的监听
+            unregisterReceiver(msgReceiver);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,18 +150,6 @@ public class DialogueActivity extends AppCompatActivity {
         });
     }
 
-    //通过这个方法让其他方法可以更新Adapter
-    public static Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case UPDATE_ADAPTER: // 服务器发来新的消息，因此要刷新adapter
-                    adapter.notifyItemInserted(msgs.size() - 1); // 当有新消息时， 刷新RecyclerView中的显示
-                    msgRecyclerView.scrollToPosition(msgs.size() - 1); // 将 RecyclerView定位到最后一行
-                default:
-                    break;
-            }
-        }
-    };
 
     private void sendMsg2Server(final User user, final Msg msg, final String targetUserId){
         DialogueMsgDTO dialogueMsgDTO = new DialogueMsgDTO(user.getUserId(), targetUserId, msg.getContent());

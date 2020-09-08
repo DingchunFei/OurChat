@@ -20,6 +20,22 @@ public class DBUtil {
         db = new MyDatabaseHelper(MyApplication.getContext(), "OurChat.db", null, 5).getWritableDatabase();
     }
 
+    public static boolean existUser(String userId){
+        Cursor cursor = db.query("user", new String[]{"user_id"}, "user_id=?", new String[]{userId}, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String id = cursor.getString(cursor.getColumnIndex ("user_id"));
+                if(id!=null ) {
+                    cursor.close();
+                    return true;
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        //不存在
+        return false;
+    }
+
     public static List<User> findAllUser(){
         List<User> userList = new ArrayList<>();
         Cursor cursor = db.query("user", null, null, null, null, null, null);
@@ -49,6 +65,14 @@ public class DBUtil {
 
     public static void deleteAllUser(){
         db.delete("user",null,null);
+    }
+
+    public static void deleteUser(String userId){
+        db.delete("user","user_id=?",new String[]{userId});
+    }
+
+    public static void deleteMsgDBPojo(String userId){
+        db.delete("msgdbpojo","targetUserId=?",new String[]{userId});
     }
 
     public static MsgDBPojo findLastMsgDBPojoByTargetUserId(String targetUserId){

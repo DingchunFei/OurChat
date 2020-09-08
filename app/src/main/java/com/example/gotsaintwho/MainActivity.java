@@ -1,27 +1,27 @@
 package com.example.gotsaintwho;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.gotsaintwho.fragment.ChatListFragment;
 import com.example.gotsaintwho.fragment.ContactListFragment;
 import com.example.gotsaintwho.fragment.MeFragment;
+import com.example.gotsaintwho.pojo.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     ViewPager viewPager;
     BottomNavigationView bottomNavigationView;
@@ -88,7 +88,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_friend_item:
-                Toast.makeText(this, "You clicked Add", Toast.LENGTH_SHORT).show();
+                //从Intent中拿到user用来传给下一个Activity
+                User user = (User) getIntent().getSerializableExtra("user_info");
+
+                Intent intent = new Intent(MainActivity.this, FindUserActivity.class);
+                intent.putExtra("user_info",user);
+                startActivity(intent);
                 break;
             default:
         }

@@ -3,6 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/add_friend_item"
         android:icon="@drawable/ic_add"
-        android:title="Backup"
-        app:showAsAction="always" />
+        android:title="Add User"
+        app:showAsAction="never" />
 </menu>

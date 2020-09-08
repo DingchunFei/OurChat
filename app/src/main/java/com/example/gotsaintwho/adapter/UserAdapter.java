@@ -3,33 +3,40 @@ package com.example.gotsaintwho.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.gotsaintwho.MyApplication;
 import com.example.gotsaintwho.R;
-import com.example.gotsaintwho.pojo.Msg;
+
 import com.example.gotsaintwho.pojo.User;
+import com.example.gotsaintwho.utils.DBUtil;
+import com.example.gotsaintwho.utils.ParamUtil;
 
 import java.util.List;
 
-//TODO 等网络图像功能实现好了来处理
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private List<User> mUserList;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout item_user_image;
-        LinearLayout item_username;
-        TextView image_already_added;
-        TextView item_user_button;
+        CircleImageView item_user_image;
+        TextView item_username;
+        ImageView image_already_added;
+        ImageView image_to_be_added;
 
         public ViewHolder(View view) {
             super(view);
             item_user_image = view.findViewById(R.id.item_user_image);
             item_username = view.findViewById(R.id.item_username);
             image_already_added = view.findViewById(R.id.image_already_added);
-            item_user_button = view.findViewById(R.id.item_user_button);
+            image_to_be_added = view.findViewById(R.id.image_to_be_added);
         }
     }
 
@@ -39,24 +46,52 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     @Override
     public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.msg_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_list, parent, false);
+
         return new UserAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(UserAdapter.ViewHolder holder, int position) {
-        User user = mUserList.get(position);
-/*        if(user)
+    public void onBindViewHolder(final UserAdapter.ViewHolder holder, int position) {
+        final User user = mUserList.get(position);
 
-        if (msg.getType() == Msg.TYPE_RECEIVED) { // 如果是收到的消息，则显示左边的消息布局，将右边的消息布局隐藏
-            holder.leftLayout.setVisibility(View.VISIBLE);
-            holder.rightLayout.setVisibility(View.GONE);
-            holder.leftMsg.setText(msg.getContent());
-        } else if (msg.getType() == Msg.TYPE_SENT) { // 如果是发出的消息，则显示右边的消息布局，将左边的消息布局隐藏
-            holder.rightLayout.setVisibility(View.VISIBLE);
-            holder.leftLayout.setVisibility(View.GONE);
-            holder.rightMsg.setText(msg.getContent());
-        }*/
+        //更具URI读取对应用户图片
+        String Uri = ParamUtil.IMAGE_URI + user.getUserId()+".jpg";
+        Glide.with(MyApplication.getContext()).load(Uri).into(holder.item_user_image);
+
+        holder.item_username.setText(user.getUsername());
+
+        //从数据库中找到所有用户,便于之后标识出已添加的用户
+        List<User> userListFromDb = DBUtil.findAllUser();
+        for (User userInDB:userListFromDb){
+            if(userInDB.getUserId().equals(user.getUserId())){
+                //表示这个用户已经是好友
+                holder.image_to_be_added.setVisibility(View.GONE);
+                holder.image_already_added.setVisibility(View.VISIBLE);
+                //为按钮添加点击事件
+                holder.image_already_added.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    //提示该用户已被添加
+                    Toast.makeText(MyApplication.getContext(),"This user has already been added",Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+        }
+        //表示这个用户还不是好友
+        holder.image_to_be_added.setVisibility(View.VISIBLE);
+        holder.image_already_added.setVisibility(View.GONE);
+        holder.image_to_be_added.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //用户加为好友
+                DBUtil.saveUser(user);
+                Toast.makeText(MyApplication.getContext(),"Adding successfully",Toast.LENGTH_SHORT).show();
+                holder.image_to_be_added.setVisibility(View.GONE);
+                holder.image_already_added.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override

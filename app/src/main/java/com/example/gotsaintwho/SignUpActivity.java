@@ -26,7 +26,6 @@ public class SignUpActivity extends AppCompatActivity {
 
     private Switch aSwitch;
     private String gender = "male";
-    private static Thread thread;
     private User userAfterSignup;
 
     @Override
@@ -54,7 +53,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String account = accountEdit.getText().toString();
-                String password = passwordEdit.getText().toString(); // 如果账号是admin且密码是123456，就认为登录成功
+                String password = passwordEdit.getText().toString();
                 //这里是登录
                 User user = new User(account, password,gender);
                 String jsonStr = JsonUtil.user2Json(user);
@@ -62,6 +61,12 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onFinish(String response) {
                         userAfterSignup = JsonUtil.json2User(response);
+                        if(userAfterSignup.getUserId() != null){
+                            Toast.makeText(SignUpActivity.this, "Sign up successfully!", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }else{
+                            Toast.makeText(SignUpActivity.this, "This username has been used", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -69,19 +74,6 @@ public class SignUpActivity extends AppCompatActivity {
                         Toast.makeText(SignUpActivity.this, "fail to connect to server", Toast.LENGTH_SHORT).show();
                     }
                 });
-                try {
-                    //等待子线程回调函数执行完后主线程再判断！
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                //注册成功
-                if (userAfterSignup!=null && userAfterSignup.getUserId()!=null) {
-                    Toast.makeText(SignUpActivity.this, "Sign up successfully!", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(SignUpActivity.this, "Please change a name!", Toast.LENGTH_SHORT).show();
-                }
             }
         });
 

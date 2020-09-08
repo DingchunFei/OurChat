@@ -23,6 +23,12 @@ public class ChatItem {
         this.imageId = imageId;
     }
 
+    public ChatItem(String targetUsername, String targetUserId, String lastChat) {
+        this.targetUsername = targetUsername;
+        this.targetUserId = targetUserId;
+        this.lastChat = lastChat;
+    }
+
     public String getTargetUserName() {
         return targetUsername;
     }

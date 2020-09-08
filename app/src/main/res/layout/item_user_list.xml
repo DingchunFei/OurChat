@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -13,27 +15,30 @@
 
     <TextView android:id="@+id/item_username"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:textSize="17dp"
-        android:textColor="#000000"
-        android:textStyle="bold" />
+        android:textSize="18dp"
+        android:textColor="#000000" />
 
     <ImageView
         android:id="@+id/image_already_added"
+        android:src="@drawable/grey_add_friend"
         android:layout_gravity="center"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_margin="10dp"
-        android:text="Add" />
+        android:visibility="gone" />
 
-    <Button
-        android:id="@+id/item_user_button"
+    <ImageView
+        android:id="@+id/image_to_be_added"
+        android:src="@drawable/green_add_friend"
         android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_margin="10dp"
-        android:text="Add" />
+        android:visibility="gone" />
 
 
 </LinearLayout>
