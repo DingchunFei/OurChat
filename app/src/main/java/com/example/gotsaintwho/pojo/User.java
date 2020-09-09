@@ -16,6 +16,10 @@ public class User extends DataSupport implements Serializable{
     public User() {
     }
 
+    public User(String userId) {
+        this.userId = userId;
+    }
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;

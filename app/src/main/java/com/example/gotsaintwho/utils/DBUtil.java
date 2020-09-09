@@ -36,6 +36,19 @@ public class DBUtil {
         return false;
     }
 
+    public static List<String> findAllUserId(){
+        List<String> idList = new ArrayList<>();
+        Cursor cursor = db.query("user", new String[]{"user_id"}, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String userId = cursor.getString(cursor.getColumnIndex ("user_id"));
+                idList.add(userId);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return idList;
+    }
+
     public static List<User> findAllUser(){
         List<User> userList = new ArrayList<>();
         Cursor cursor = db.query("user", null, null, null, null, null, null);

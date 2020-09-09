@@ -15,22 +15,25 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MomentActivity"
+        <activity android:name=".AddMomentActivity">
+        </activity>
+        <activity
+            android:name=".MomentActivity"
             android:theme="@style/FruitActivityTheme">
+
+        </activity>
+        <activity
+            android:name=".FindUserActivity"
+            android:label="Find User" />
+        <activity android:name=".DialogueActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".FindUserActivity"
-            android:label="Find User"></activity>
-        <activity android:name=".DialogueActivity" />
-        <activity
-            android:name=".LoginActivity"
-            android:label="Login">
-
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".MainActivity" />

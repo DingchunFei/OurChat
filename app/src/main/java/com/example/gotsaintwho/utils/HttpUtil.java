@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.example.gotsaintwho.MyApplication;
 import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
+import com.example.gotsaintwho.pojo.Moment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.Base64;
@@ -114,6 +115,37 @@ public class HttpUtil {
                                       byte[] responseBody, Throwable error) {
                     // 上传失败后要做到工作
                     Toast.makeText(MyApplication.getContext(), "change image error", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Toast.makeText(MyApplication.getContext(), "image has not been taken", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void uploadMoment(Moment moment, String path, String url) throws Exception {
+        File file = new File(path);
+        if (file.exists() && file.length() > 0) {
+            AsyncHttpClient client = new AsyncHttpClient();
+            RequestParams params = new RequestParams();
+            params.put("moment_image", file);
+            params.put("user_id", moment.getUserId());
+            params.put("moment_username", moment.getUsername());
+            params.put("moment_content", moment.getMomentContent());
+
+            // 上传文件
+            client.post(url, params, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers,
+                                      byte[] responseBody) {
+                    // 上传成功后要做的工作
+                    Toast.makeText(MyApplication.getContext(), "moment has been created", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers,
+                                      byte[] responseBody, Throwable error) {
+                    // 上传失败后要做到工作
+                    Toast.makeText(MyApplication.getContext(), "create moment error", Toast.LENGTH_LONG).show();
                 }
             });
         } else {

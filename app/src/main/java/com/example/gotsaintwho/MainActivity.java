@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import com.example.gotsaintwho.fragment.ChatListFragment;
 import com.example.gotsaintwho.fragment.ContactListFragment;
 import com.example.gotsaintwho.fragment.MeFragment;
+import com.example.gotsaintwho.fragment.MultifunctionFragment;
 import com.example.gotsaintwho.pojo.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -39,7 +40,7 @@ public class MainActivity extends BaseActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         fragments = new ArrayList<>();
         fragments.add(new ChatListFragment());
-        fragments.add(new ContactListFragment());
+        fragments.add(new MultifunctionFragment());
         fragments.add(new MeFragment());
         BtmNavViewAdapter btmNavViewAdapter = new BtmNavViewAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(btmNavViewAdapter);

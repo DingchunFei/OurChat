@@ -1,16 +1,27 @@
 package com.example.gotsaintwho.utils;
 
+import android.nfc.Tag;
+import android.nfc.tech.TagTechnology;
+import android.util.Log;
+
+import com.example.gotsaintwho.pojo.AllUserIdDTO;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
+import com.example.gotsaintwho.pojo.Moment;
 import com.example.gotsaintwho.pojo.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class JsonUtil {
+    private static final String TAG = "JsonUtil";
 
     private static Gson gson = new Gson();
 
@@ -36,11 +47,43 @@ public class JsonUtil {
         //将JSON的String 转成一个JsonArray对象
         JsonArray jsonArray = parser.parse(jsonStr).getAsJsonArray();
 
-        //加强for循环遍历JsonArray
+        //遍历JsonArray
         for (JsonElement userElement : jsonArray) {
             //使用GSON，直接转成Bean对象
             userList.add(gson.fromJson(userElement, User.class));
         }
         return userList;
     }
+
+    public static List<Moment> json2MomentList(String jsonStr){
+        ArrayList<Moment> MomentList = new ArrayList<>();
+        //Json的解析类对象
+        JsonParser parser = new JsonParser();
+        //将JSON的String 转成一个JsonArray对象
+        JsonArray jsonArray = parser.parse(jsonStr).getAsJsonArray();
+
+        //遍历JsonArray
+        for (JsonElement momentElement : jsonArray) {
+            //使用GSON，直接转成Bean对象
+            MomentList.add(gson.fromJson(momentElement, Moment.class));
+        }
+        return MomentList;
+    }
+
+    public static String userId2JsonStr(AllUserIdDTO allUserId){
+        String jsonStr = gson.toJson(allUserId, AllUserIdDTO.class);
+        return jsonStr;
+    }
+
+/*    public static String json2MomentImgId(String jsonStr){
+        try {
+            JSONObject jsonObject=new JSONObject(jsonStr);
+            String img_id = jsonObject.getString("img_id");
+            Log.e(TAG, img_id );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }*/
+
 }

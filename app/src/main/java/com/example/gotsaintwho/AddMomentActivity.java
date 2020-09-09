@@ -1,4 +1,10 @@
-package com.example.gotsaintwho.fragment;
+package com.example.gotsaintwho;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -6,139 +12,107 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
+import android.nfc.tech.TagTechnology;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.ObjectKey;
-import com.example.gotsaintwho.R;
+import com.example.gotsaintwho.pojo.Moment;
 import com.example.gotsaintwho.pojo.User;
-import com.example.gotsaintwho.utils.DBUtil;
 import com.example.gotsaintwho.utils.HttpUtil;
 import com.example.gotsaintwho.utils.ParamUtil;
-
-import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.util.UUID;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+public class AddMomentActivity extends AppCompatActivity {
+    private static final String TAG = "AddMomentActivity";
 
-public class MeFragment extends Fragment {
-
-    private static final String TAG = "MeFragment";
+    private EditText momentEditText;
+    private ImageView momentImage;
+    private ImageView momentButton;
+    private Button momentSubmit;
 
     public static final int NO_SELECTION = 0;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
-
-    public String imagePath;
-
-    private CircleImageView imageView;
-    private TextView usernameTextView;
-    private User user;
-    private Uri imageUri;
-    private Button submitBtn;
     private static Integer isChanged = NO_SELECTION;
-    private boolean refresh = true;
+    public String imagePath;
+    private Uri imageUri;
+    String imageId;
 
-    @Nullable
+    private User user;
+    String momentEditTextStr;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_me, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_moment);
+        //TODO 获取从user中传来的user信息
+        user = (User) getIntent().getSerializableExtra("user_info");
+        momentEditText = findViewById(R.id.moment_edit_text);
+        momentImage = findViewById(R.id.moment_image);
+        momentButton = findViewById(R.id.moment_add_img_button);
+        momentSubmit = findViewById(R.id.moment_submit_button);
 
-        user = (User) getActivity().getIntent().getSerializableExtra("user_info");
-
-        usernameTextView = view.findViewById(R.id.me_username);
-        usernameTextView.setText(user.getUsername());
-
-        imageView = view.findViewById(R.id.me_avatar);
-        imageView.setOnClickListener(new View.OnClickListener() {
+        momentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupMenu(imageView);
+                //表示是添加朋友圈类型
+                showPopupMenu(view);
             }
         });
-
-/*        String uri = ParamUtil.IMAGE_URI + user.getUserId() + ".jpg";
-        Glide.with(getContext()).load(uri).into(imageView);*/
-
-        submitBtn = view.findViewById(R.id.submit_change);
-
-        submitBtn.setOnClickListener(new View.OnClickListener() {
+        momentSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isChanged != NO_SELECTION){
-                    //表示图像被修改过了，需要提交
-                    try {
-                        if(isChanged == TAKE_PHOTO){
-                            //将图片上传到服务器
-                            HttpUtil.uploadFile(user.getUserId(),getActivity().getExternalCacheDir()+"/avatar.jpg", ParamUtil.URI+"user/uploadImg");
-                        }else if(isChanged == CHOOSE_PHOTO){
-                            HttpUtil.uploadFile(user.getUserId(),imagePath, ParamUtil.URI+"user/uploadImg");
-                        }
-                        isChanged = NO_SELECTION;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                if(momentEditText.getText().toString()==null || momentEditText.getText().toString().equals("")){
+                    Toast.makeText(AddMomentActivity.this, "Fill something before submit", Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(getActivity(),"Nothing has been changed",Toast.LENGTH_SHORT).show();
+                    if(isChanged != NO_SELECTION){
+                        //说明editText填满了，准备发送http请求
+                        Moment moment = new Moment();
+                        moment.setUserId(user.getUserId());
+                        moment.setUsername(user.getUsername());
+                        moment.setMomentContent(momentEditText.getText().toString());
+
+                        try {
+                            if(isChanged == TAKE_PHOTO){
+                                //将图片上传到服务器
+                                HttpUtil.uploadMoment(moment,AddMomentActivity.this.getExternalCacheDir()+"/moment.jpg", ParamUtil.URI+"moment/uploadImg");
+                            }else if(isChanged == CHOOSE_PHOTO){
+                                HttpUtil.uploadMoment(moment,imagePath, ParamUtil.URI+"moment/uploadImg");
+                            }
+                            isChanged = NO_SELECTION;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        Toast.makeText(AddMomentActivity.this,"Nothing has been changed",Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
-        return view;
-    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        //视图摧毁钱refresh置为true，保证下次使用fragment依然会调用onStart()里的方法
-        refresh = true;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        //因为头像可能被更换，所以每次resume后重新读取！
-        //从网络读取图片作为头像
-        if(refresh){
-            String updateTime = String.valueOf(System.currentTimeMillis()); // 在需要重新获取更新的图片时调用
-            String uri = ParamUtil.IMAGE_URI + user.getUserId() + ".jpg";
-            Glide.with(getContext())
-                    .load(uri)
-                    .signature(new ObjectKey(updateTime))   //加个签名，防止缓存，不然修改完图片后下次生命周期加载会从缓存里读！
-                    .into(imageView);
-        }
     }
 
     private void showPopupMenu(View view) {
         // 这里的view代表popupMenu需要依附的view
-        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+        PopupMenu popupMenu = new PopupMenu(AddMomentActivity.this, view);
         // 获取布局文件
         popupMenu.getMenuInflater().inflate(R.menu.avatar_popup_menu, popupMenu.getMenu());
         popupMenu.show();
@@ -146,14 +120,14 @@ public class MeFragment extends Fragment {
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                //为照片设置一个ID
+                imageId = UUID.randomUUID().toString();
                 if(item.getTitle().toString().equals("Open Album")){
                     //点击了打开相册
                     checkOpenAlbum();
-                    refresh = false;
                 }else if(item.getTitle().toString().equals("Use Camera")){
                     //点击了打开相机
                     openCamera();
-                    refresh = false;
                 }
                 Log.e(TAG, item.getTitle().toString() );
                 return true;
@@ -169,7 +143,7 @@ public class MeFragment extends Fragment {
 
 
     private void openCamera(){
-        File outputImage = new File(getActivity().getExternalCacheDir(), "avatar.jpg");
+        File outputImage = new File(AddMomentActivity.this.getExternalCacheDir(), "moment.jpg");
         Log.e(TAG, "path: "+outputImage.getPath());
         try {
             if (outputImage.exists()) {
@@ -179,7 +153,7 @@ public class MeFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         } if (Build.VERSION.SDK_INT >= 24) {
-            imageUri = FileProvider.getUriForFile(getActivity(), "com.example.gotsaintwho.fileprovider", outputImage);
+            imageUri = FileProvider.getUriForFile(AddMomentActivity.this, "com.example.gotsaintwho.fileprovider", outputImage);
         } else {
             imageUri = Uri.fromFile(outputImage);
         }
@@ -191,8 +165,8 @@ public class MeFragment extends Fragment {
 
     private void checkOpenAlbum(){
         //打开相册需要申请危险权限
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager. PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{ Manifest.permission. WRITE_EXTERNAL_STORAGE }, 1);
+        if (ContextCompat.checkSelfPermission(AddMomentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager. PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(AddMomentActivity.this, new String[]{ Manifest.permission. WRITE_EXTERNAL_STORAGE }, 1);
         } else {
             openAlbum();
         }
@@ -206,7 +180,7 @@ public class MeFragment extends Fragment {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager. PERMISSION_GRANTED) {
                     openAlbum();
                 } else {
-                    Toast.makeText(getActivity(), "You denied the permission", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddMomentActivity.this, "You denied the permission", Toast.LENGTH_SHORT).show();
                 } break;
             default:
         }
@@ -222,7 +196,7 @@ public class MeFragment extends Fragment {
     private void handleImageOnKitKat(Intent data) {
         String imagePath = null;
         Uri uri = data.getData();
-        if (DocumentsContract.isDocumentUri(getActivity(), uri)) { // 如果是document类型的Uri，则通过document id处理
+        if (DocumentsContract.isDocumentUri(AddMomentActivity.this, uri)) { // 如果是document类型的Uri，则通过document id处理
             String docId = DocumentsContract.getDocumentId(uri);
             if("com.android.providers.media.documents".equals(uri.getAuthority())) {
                 String id = docId.split(":")[1]; // 解析出数字格式的id
@@ -250,7 +224,7 @@ public class MeFragment extends Fragment {
 
     private String getImagePath(Uri uri, String selection) {
         String path = null; // 通过Uri和selection来获取真实的图片路径
-        Cursor cursor = getActivity().getContentResolver().query(uri, null, selection, null, null);
+        Cursor cursor = AddMomentActivity.this.getContentResolver().query(uri, null, selection, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 path = cursor.getString(cursor.getColumnIndex(MediaStore. Images.Media.DATA));
@@ -262,33 +236,44 @@ public class MeFragment extends Fragment {
     private void displayImage(String imagePath) {
         if (imagePath != null) {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            imageView.setImageBitmap(bitmap);
+            momentImage.setImageBitmap(bitmap);
         } else {
-            Toast.makeText(getActivity(), "failed to get image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddMomentActivity.this, "failed to get image", Toast.LENGTH_SHORT).show();
         }
     }
 
     //相机拍完后返回照片的回调
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case TAKE_PHOTO:
-                if (resultCode == getActivity().RESULT_OK) {
+                if (resultCode == AddMomentActivity.this.RESULT_OK) {
                     try {
                         //表示图像被改变过了，需要予以提交
                         isChanged = TAKE_PHOTO;
+
+                        //让图片区域变得Visible
+                        momentImage.setVisibility(View.VISIBLE);
+                        momentButton.setVisibility(View.GONE);
+
                         // 将拍摄的照片显示出来
-                        Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageUri));
-                        imageView.setImageBitmap(bitmap);
+                        Bitmap bitmap = BitmapFactory.decodeStream(AddMomentActivity.this.getContentResolver().openInputStream(imageUri));
+                        momentImage.setImageBitmap(bitmap);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
             case CHOOSE_PHOTO:
-                if (resultCode == getActivity().RESULT_OK) { // 判断手机系统版本号
+                if (resultCode == AddMomentActivity.this.RESULT_OK) { // 判断手机系统版本号
                     //表示图像被改变过了，需要予以提交
                     isChanged = CHOOSE_PHOTO;
+
+                    //让图片区域变得Visible
+                    momentImage.setVisibility(View.VISIBLE);
+                    momentButton.setVisibility(View.GONE);
+
                     if (Build.VERSION.SDK_INT >= 19) { // 4.4及以上系统使用这个方法处理图片
                         handleImageOnKitKat(data);
                     } else { // 4.4以下系统使用这个方法处理图片

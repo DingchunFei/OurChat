@@ -117,7 +117,7 @@ public class ChatListFragment extends Fragment {
                 User targetUser = new User();
                 targetUser.setUserId(chatItem.getTargetUserId());
                 targetUser.setUsername(chatItem.getTargetUsername());
-                intent.putExtra("user_info", ChatListFragment.this.user);
+                intent.putExtra("user_info", user);
                 intent.putExtra("target_user_info",targetUser);
                 startActivity(intent);
             }
