@@ -1,8 +1,5 @@
 package com.example.gotsaintwho.pojo;
 
-import org.litepal.annotation.Column;
-import org.litepal.crud.DataSupport;
-
 public class Msg {
 
     public static final int TYPE_RECEIVED = 0;

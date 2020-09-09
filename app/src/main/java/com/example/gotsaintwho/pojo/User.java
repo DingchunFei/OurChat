@@ -1,15 +1,10 @@
 package com.example.gotsaintwho.pojo;
-
-import org.litepal.annotation.Column;
-import org.litepal.crud.DataSupport;
-
 import java.io.Serializable;
 
-public class User extends DataSupport implements Serializable{
+public class User implements Serializable{
 
     private String userId;
     private String username;
-    @Column(ignore = true)
     private String password;
     private String gender;
 

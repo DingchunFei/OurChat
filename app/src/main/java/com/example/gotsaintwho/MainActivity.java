@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.gotsaintwho.fragment.ChatListFragment;
-import com.example.gotsaintwho.fragment.ContactListFragment;
 import com.example.gotsaintwho.fragment.MeFragment;
 import com.example.gotsaintwho.fragment.MultifunctionFragment;
 import com.example.gotsaintwho.pojo.User;

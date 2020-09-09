@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -43,6 +44,8 @@ public class MomentActivity extends AppCompatActivity {
     RecyclerView momentRecyclerView;
     FloatingActionButton fab;
     MomentAdapter momentAdapter;
+    SwipeRefreshLayout swipeRefresh;
+
     private User user;
 
     @Override
@@ -50,6 +53,14 @@ public class MomentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moment);
         user = (User) getIntent().getSerializableExtra("user_info");
+
+        swipeRefresh = findViewById(R.id.swipe_refresh);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshMoment();
+            }
+        });
 
         fab = findViewById(R.id.moment_floating_button);
         momentRecyclerView = findViewById(R.id.moment_recycler_view);
@@ -71,8 +82,8 @@ public class MomentActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         collapsingToolbar.setTitle("Moment");
-        //朋友圈背景
-        Glide.with(this).load(ParamUtil.IMAGE_URI+"bg.jpg").into(momentBgView);
+/*        //朋友圈背景
+        Glide.with(this).load(ParamUtil.IMAGE_URI+"bg.jpg").into(momentBgView);*/
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,14 +94,19 @@ public class MomentActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
-/*        //TODO 这里需要从sqlite找出该用户好友,并包装成JsonStr
-        String jsonStr = "{\n" +
-                "    \"friendsIdList\":[1,2,3,4,5]\n" +
-                "}";*/
+    //每次start刷新界面
+    @Override
+    protected void onStart() {
+        super.onStart();
+        refreshMoment();
+    }
+
+    private void refreshMoment(){
+        //从数据库找出所有的好友id并转化为Json格式
         List<String> allUserId = getAllUserId();
         String jsonStr = JsonUtil.userId2JsonStr(new AllUserIdDTO(allUserId));
-        Log.e(TAG, "=========================>"+jsonStr );
 
         sendRequestWithHttpURLConnection("moment", jsonStr, new HttpCallbackListener() {
             @Override
@@ -101,15 +117,15 @@ public class MomentActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //Toast.makeText(MomentActivity.this, "pyq!!!", Toast.LENGTH_SHORT).show();
                         momentAdapter.notifyDataSetChanged();
+                        swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
                     }
                 });
             }
 
             @Override
             public void onError(Exception e) {
-
+                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
             }
         });
     }

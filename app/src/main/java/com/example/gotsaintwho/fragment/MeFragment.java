@@ -36,11 +36,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
 import com.example.gotsaintwho.R;
 import com.example.gotsaintwho.pojo.User;
-import com.example.gotsaintwho.utils.DBUtil;
 import com.example.gotsaintwho.utils.HttpUtil;
 import com.example.gotsaintwho.utils.ParamUtil;
 
-import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.io.FileNotFoundException;

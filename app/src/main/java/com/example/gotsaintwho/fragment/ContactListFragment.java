@@ -1,3 +1,4 @@
+/*
 package com.example.gotsaintwho.fragment;
 
 import android.Manifest;
@@ -150,4 +151,4 @@ public class ContactListFragment extends Fragment {
                     break;
         }
     }
-}
+}*/

@@ -122,7 +122,7 @@ public class HttpUtil {
         }
     }
 
-    public static void uploadMoment(Moment moment, String path, String url) throws Exception {
+    public static void uploadMoment(Moment moment, String path, String url, final HttpCallbackListener listener) throws Exception {
         File file = new File(path);
         if (file.exists() && file.length() > 0) {
             AsyncHttpClient client = new AsyncHttpClient();
@@ -139,6 +139,7 @@ public class HttpUtil {
                                       byte[] responseBody) {
                     // 上传成功后要做的工作
                     Toast.makeText(MyApplication.getContext(), "moment has been created", Toast.LENGTH_LONG).show();
+                    listener.onFinish("");      //不需要response内容，只是为了弹出finish()
                 }
 
                 @Override

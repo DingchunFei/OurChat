@@ -35,10 +35,10 @@ public class SignUpActivity extends AppCompatActivity {
 
         back = findViewById(R.id.back);
         signup = findViewById(R.id.signUp);
-        aSwitch = findViewById(R.id.gender_switch);
+        //aSwitch = findViewById(R.id.gender_switch);
         accountEdit = findViewById(R.id.account);
         passwordEdit = findViewById(R.id.password);
-        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+/*        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {   //表示开启，Female
@@ -47,7 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
                     gender = "male";
                 }
             }
-        });
+        });*/
 
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,17 +55,27 @@ public class SignUpActivity extends AppCompatActivity {
                 String account = accountEdit.getText().toString();
                 String password = passwordEdit.getText().toString();
                 //这里是登录
-                User user = new User(account, password,gender);
+                User user = new User(account, password, gender);
                 String jsonStr = JsonUtil.user2Json(user);
                 HttpUtil.sendRequestWithHttpURLConnection("user", jsonStr, new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
                         userAfterSignup = JsonUtil.json2User(response);
                         if(userAfterSignup.getUserId() != null){
-                            Toast.makeText(SignUpActivity.this, "Sign up successfully!", Toast.LENGTH_SHORT).show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(SignUpActivity.this, "Sign up successfully!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             finish();
                         }else{
-                            Toast.makeText(SignUpActivity.this, "This username has been used", Toast.LENGTH_SHORT).show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(SignUpActivity.this, "This username has been used", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
 

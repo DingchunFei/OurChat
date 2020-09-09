@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
 import com.example.gotsaintwho.pojo.Moment;
 import com.example.gotsaintwho.pojo.User;
 import com.example.gotsaintwho.utils.HttpUtil;
@@ -89,13 +90,31 @@ public class AddMomentActivity extends AppCompatActivity {
                         moment.setUserId(user.getUserId());
                         moment.setUsername(user.getUsername());
                         moment.setMomentContent(momentEditText.getText().toString());
-
                         try {
                             if(isChanged == TAKE_PHOTO){
                                 //将图片上传到服务器
-                                HttpUtil.uploadMoment(moment,AddMomentActivity.this.getExternalCacheDir()+"/moment.jpg", ParamUtil.URI+"moment/uploadImg");
+                                HttpUtil.uploadMoment(moment, AddMomentActivity.this.getExternalCacheDir() + "/moment.jpg", ParamUtil.URI + "moment/uploadImg", new HttpCallbackListener() {
+                                    @Override
+                                    public void onFinish(String response) {
+                                        //发送完朋友圈后退出
+                                        finish();
+                                    }
+                                    @Override
+                                    public void onError(Exception e) {
+                                    }
+                                });
                             }else if(isChanged == CHOOSE_PHOTO){
-                                HttpUtil.uploadMoment(moment,imagePath, ParamUtil.URI+"moment/uploadImg");
+                                HttpUtil.uploadMoment(moment,imagePath, ParamUtil.URI+"moment/uploadImg", new HttpCallbackListener() {
+                                    @Override
+                                    public void onFinish(String response) {
+                                        //发送完朋友圈后退出
+                                        finish();
+                                    }
+                                    @Override
+                                    public void onError(Exception e) {
+
+                                    }
+                                });
                             }
                             isChanged = NO_SELECTION;
                         } catch (Exception e) {
