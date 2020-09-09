@@ -3,6 +3,7 @@ package com.example.got_saint_who.controller;
 import com.example.got_saint_who.pojo.User;
 import com.example.got_saint_who.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Value("${system.config.imageSavePath}")
+    private static final String filePath = "/usr/local/androidImages/";     //默认图片存放位置
+    //private static final String filePath = "C:\\Users\\conan\\Desktop\\CCE\\";
 
     /**
      * 增加新用户
@@ -54,9 +59,6 @@ public class UserController {
     public User findUserById(@RequestBody User user){
         return userService.findUserById(user.getUserId());
     }
-
-    //private static final String filePath = "/usr/local/androidImages/";
-    private static final String filePath = "C:\\Users\\conan\\Desktop\\CCE\\";
 
     @RequestMapping(value = "/uploadImg", method = RequestMethod.POST)
     public String uploadImg(@RequestParam("img") MultipartFile file, HttpServletRequest request){
