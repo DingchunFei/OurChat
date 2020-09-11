@@ -2,6 +2,7 @@ package com.example.gotsaintwho.dialogue;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
@@ -58,6 +59,15 @@ public class ReceiverThread extends Thread {
     private static final String TAG = "ReceiverThread";
 
     private void sendNotification(String userId, String username, String content){
+        //用户点击后直接跳转到聊天窗
+        Intent intent = new Intent(MyApplication.getContext(), DialogueActivity.class);
+        //放入发送消息放的信息
+        intent.putExtra("target_user_info",user);
+        //放入自己的信息
+        intent.putExtra("user_info",MyApplication.getUser());
+        //最后flag要LAG_UPDATE_CURRENT不然收不到参数
+        PendingIntent pi = PendingIntent.getActivity(MyApplication.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         /**
          * 发送Notification
          */
@@ -73,7 +83,9 @@ public class ReceiverThread extends Thread {
                 new NotificationCompat.Builder(MyApplication.getContext())
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContent(remoteViews)
-                        .setPriority(NotificationCompat.PRIORITY_MAX);
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setContentIntent(pi)
+                        .setAutoCancel(true);
 
         final Notification notification = mBuilder.build();
 
@@ -135,9 +147,9 @@ public class ReceiverThread extends Thread {
                     HttpUtil.sendRequestWithHttpURLConnection("user/findUserById", JsonUtil.user2Json(user), new HttpCallbackListener() {
                         @Override
                         public void onFinish(String response) {
-                            User userWithusername = JsonUtil.json2User(response);
+                            user = JsonUtil.json2User(response);
                             //往sqlite中存一份对方用户
-                            DBUtil.saveUser(userWithusername);
+                            DBUtil.saveUser(user);
 
                             /**
                              * 收到新消息后广播
@@ -145,7 +157,7 @@ public class ReceiverThread extends Thread {
                             Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
                             MyApplication.getContext().sendBroadcast(intent);
                             //发送通知
-                            sendNotification(user.getUserId(),userWithusername.getUsername(),dialogueMsgDTO.getMessage());
+                            sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
                         }
 
                         @Override

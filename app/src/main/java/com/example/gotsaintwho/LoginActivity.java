@@ -98,6 +98,8 @@ public class LoginActivity extends AppCompatActivity {
                             //登录成功后的页面跳转
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("user_info", userAfterLogin);
+                            //记录当前的用户信息
+                            MyApplication.setUser(userAfterLogin);
 
                             startActivity(intent);
                             finish();
