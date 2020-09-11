@@ -11,20 +11,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.LongDef;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
 import com.example.gotsaintwho.dialogue.DialogueClient;
 import com.example.gotsaintwho.dialogue.DialogueQueue;
-import com.example.gotsaintwho.dialogue.SenderThread;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
 import com.example.gotsaintwho.pojo.User;
 import com.example.gotsaintwho.utils.JsonUtil;
-import com.example.gotsaintwho.utils.MyDatabaseHelper;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import static com.example.gotsaintwho.utils.HttpUtil.sendRequestWithHttpURLConnection;
 
