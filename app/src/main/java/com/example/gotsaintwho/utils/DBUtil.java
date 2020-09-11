@@ -10,6 +10,7 @@ import com.example.gotsaintwho.pojo.MsgDBPojo;
 import com.example.gotsaintwho.pojo.User;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class DBUtil {
@@ -114,14 +115,14 @@ public class DBUtil {
     }
 
     public static List<MsgDBPojo> findAllMsgDBPojoByTargetUserId(String targetUserId){
-        List<MsgDBPojo> msgDBPojoList = new ArrayList<>();
+        LinkedList<MsgDBPojo> msgDBPojoList = new LinkedList<>();
         Cursor cursor = db.query("msgdbpojo", new String[]{"id","content","type"}, "targetUserId=?", new String[]{targetUserId}, null, null, "id desc");
         if (cursor.moveToFirst()) {
             do {
                 String content = cursor.getString(cursor.getColumnIndex ("content"));
                 int type = cursor.getInt(cursor.getColumnIndex ("type"));
                 MsgDBPojo msgDBPojo = new MsgDBPojo(content,type,targetUserId);
-                msgDBPojoList.add(msgDBPojo);
+                msgDBPojoList.push(msgDBPojo);
             } while (cursor.moveToNext());
         }
         cursor.close();
