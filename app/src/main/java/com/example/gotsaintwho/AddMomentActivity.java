@@ -55,7 +55,7 @@ public class AddMomentActivity extends AppCompatActivity {
     private static Integer isChanged = NO_SELECTION;
     public String imagePath;
     private Uri imageUri;
-    String imageId;
+    private String imageId;
 
     private User user;
 
