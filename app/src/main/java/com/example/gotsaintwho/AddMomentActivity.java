@@ -58,7 +58,6 @@ public class AddMomentActivity extends AppCompatActivity {
     String imageId;
 
     private User user;
-    String momentEditTextStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
