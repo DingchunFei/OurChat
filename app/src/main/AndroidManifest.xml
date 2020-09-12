@@ -19,8 +19,7 @@
         </activity>
         <activity
             android:name=".MomentActivity"
-            android:theme="@style/FruitActivityTheme">
-
+            android:theme="@style/MomentActivityTheme">
         </activity>
         <activity android:name=".FindUserActivity" />
         <activity android:name=".DialogueActivity" />
@@ -28,7 +27,6 @@
             android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
