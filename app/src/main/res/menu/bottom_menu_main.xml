@@ -4,8 +4,8 @@
     android:icon="@drawable/ic_conversation"
     android:title="Home"></item>
 <item android:id="@+id/item2"
-    android:icon="@drawable/ic_contacts"
-    android:title="Contacts"></item>
+    android:icon="@drawable/ic_menu"
+    android:title="Menu"></item>
 <item android:id="@+id/item3"
     android:icon="@drawable/ic_user"
     android:title="Me"></item>

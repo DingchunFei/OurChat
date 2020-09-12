@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Type something here"
-            android:maxLines="2" />
+            android:maxLines="5" />
 
         <Button
             android:id="@+id/send"
