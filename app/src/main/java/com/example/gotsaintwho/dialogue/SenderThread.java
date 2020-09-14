@@ -1,5 +1,7 @@
 package com.example.gotsaintwho.dialogue;
 
+import android.util.Log;
+
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -9,7 +11,7 @@ import java.net.Socket;
  */
 public class SenderThread extends Thread {
     private Socket socket;
-
+    private static final String TAG = "SenderThread";
     public SenderThread(Socket socket) {
         this.socket = socket;
     }
@@ -17,6 +19,12 @@ public class SenderThread extends Thread {
     public void run() {
         //alway checking whether there are new drawing message sent from current user's whiteboard
         while (true) {
+            try {
+                sleep(3000);
+                Log.e(TAG, "Sender Thread还没被杀死");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             //发现发送队列不为空，向服务器发送数据
             if (DialogueQueue.getSenderQueue().size() != 0) {
                 //fetch the first element

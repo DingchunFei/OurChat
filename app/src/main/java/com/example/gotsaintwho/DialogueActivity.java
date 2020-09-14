@@ -49,6 +49,18 @@ public class DialogueActivity extends BaseActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        /**
+         * 因为这个Activity类型是SingleTask.防止从Notification进入后，重复两次DialogueActivity
+         * 但是如果不在这个方法里刷新DialgoueActivity的内容的话，从Notification点入后msg内容没
+         * 有更新。因此这个方法里要刷新一下！
+         */
+        super.onNewIntent(intent);
+        adapter.notifyItemInserted(msgs.size() - 1);
+        msgRecyclerView.scrollToPosition(msgs.size() - 1);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         //重置为null

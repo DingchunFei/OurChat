@@ -22,7 +22,8 @@
             android:theme="@style/MomentActivityTheme">
         </activity>
         <activity android:name=".FindUserActivity" />
-        <activity android:name=".DialogueActivity" />
+        <activity android:name=".DialogueActivity"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".LoginActivity">
             <intent-filter>

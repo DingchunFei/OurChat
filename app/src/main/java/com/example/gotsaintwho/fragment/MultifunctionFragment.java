@@ -45,16 +45,7 @@ public class MultifunctionFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         MultifunctionAdapter adapter = new MultifunctionAdapter(multifunctionList);
         recyclerView.setAdapter(adapter);
-/*        Button button = view.findViewById(R.id.moment_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Intent intent = new Intent(getActivity(), MomentActivity.class);
-                intent.putExtra("user_info", user);
-                startActivity(intent);
-            }
-        });*/
         return view;
     }
 
