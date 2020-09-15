@@ -18,6 +18,7 @@ public class SenderThread extends Thread {
 
     public void run() {
         //alway checking whether there are new drawing message sent from current user's whiteboard
+
         while (true) {
             //发现发送队列不为空，向服务器发送数据
             if (DialogueQueue.getSenderQueue().size() != 0) {
