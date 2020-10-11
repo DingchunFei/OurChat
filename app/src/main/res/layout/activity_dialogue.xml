@@ -7,6 +7,7 @@
     android:background="#d8e0e8"
     android:orientation="vertical">
 
+    <!--include title bar-->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -15,6 +16,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+    <!--include recyclerview bar-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/msg_recycler_view"
         android:layout_width="match_parent"
@@ -23,15 +25,39 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp">
 
-        <EditText
-            android:id="@+id/input_text"
+        <Button
+            android:id="@+id/btn_call_audio"
+            android:layout_width="18dp"
+            android:layout_height="30dp"
+            android:layout_margin="10px"
+            android:text="A" />
+
+        <RelativeLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Type something here"
-            android:maxLines="5" />
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+
+            <EditText
+                android:id="@+id/input_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Type something here"
+                android:maxLines="5" />
+
+            <Button
+                android:id="@+id/btn_record"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Press"
+                android:maxLines="5"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
 
         <Button
             android:id="@+id/send"

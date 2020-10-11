@@ -26,11 +26,12 @@ import java.util.List;
 
 
 public class DialogueActivity extends BaseActivity {
-
     private static List<Msg> msgs;
 
     private EditText inputText;
     private Button send;
+    private Button callAudio;
+    private Button recordAudio;
     private RecyclerView msgRecyclerView;
     private MsgAdapter adapter;
     private User user = null;
@@ -42,6 +43,7 @@ public class DialogueActivity extends BaseActivity {
     class MsgReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            //onReceive() used to capture the message
             //一旦接收到消息传递的广播，就刷新页面！
             adapter.notifyItemInserted(msgs.size() - 1); // 当有新消息时， 刷新RecyclerView中的显示
             msgRecyclerView.scrollToPosition(msgs.size() - 1); // 将 RecyclerView定位到最后一行
@@ -104,12 +106,14 @@ public class DialogueActivity extends BaseActivity {
         //设置toolbar的内容,变成Target user的id
         getSupportActionBar().setTitle(targetUser.getUsername());
 
-        inputText = findViewById(R.id.input_text);
         send = findViewById(R.id.send);
         msgRecyclerView = findViewById(R.id.msg_recycler_view);
+        callAudio =  findViewById(R.id.btn_call_audio);
+        recordAudio = findViewById(R.id.btn_record);
+        inputText = findViewById(R.id.input_text);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         msgRecyclerView.setLayoutManager(layoutManager);
-
         //设置当前的目标用户
         currentTargetUserId = targetUser.getUserId();
         //获取与targetUser的聊天全部内容
@@ -123,6 +127,23 @@ public class DialogueActivity extends BaseActivity {
             }
             msgListMap.put(targetUser.getUserId(),msgs);
         }
+
+        //callAudio button
+         callAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //callAudio.setText("r");
+                if(recordAudio.isShown()){
+                    System.out.println("recordBtn is show, hide it");
+                    recordAudio.setVisibility(View.GONE);
+                    inputText.setVisibility(View.VISIBLE);
+                }else{
+                    System.out.println("inputText is show, hide it");
+                    inputText.setVisibility(View.GONE);
+                    recordAudio.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
         adapter = new MsgAdapter(msgs);
         msgRecyclerView.setAdapter(adapter);
@@ -147,11 +168,9 @@ public class DialogueActivity extends BaseActivity {
         });
     }
 
-
     private void sendMsg2Server(final User user, final Msg msg, final String targetUserId){
         DialogueMsgDTO dialogueMsgDTO = new DialogueMsgDTO(user.getUserId(), targetUserId, msg.getContent());
         //将用户发出的消息发送到服务器！
         DialogueQueue.sendDialogue(dialogueMsgDTO);
     }
-
 }
