@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.example.got_saint_who.GotSaintWhoApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.511 s - in com.example.got_saint_who.GotSaintWhoApplicationTests
