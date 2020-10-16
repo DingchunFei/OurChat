@@ -22,15 +22,30 @@
             android:theme="@style/MomentActivityTheme">
         </activity>
         <activity android:name=".FindUserActivity" />
-        <activity android:name=".DialogueActivity"
-            android:launchMode="singleTask"/>
-        <activity
+        <!--<activity android:name=".DialogueActivity"
+            android:launchMode="singleTask"/>-->
+
+       <!-- <activity
             android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>-->
+
+        <activity
+            android:name=".DialogueActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+
+        <activity
+            android:name=".LoginActivity">
+        </activity>
+
+
         <activity android:name=".SignUpActivity" />
         <activity android:name=".MainActivity" />
 

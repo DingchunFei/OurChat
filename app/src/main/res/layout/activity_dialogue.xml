@@ -27,12 +27,14 @@
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
-        <Button
+        <ImageView
             android:id="@+id/btn_call_audio"
-            android:layout_width="18dp"
-            android:layout_height="30dp"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
             android:layout_margin="10px"
-            android:text="A" />
+            android:src="@drawable/ic_audio" />
+
+
 
         <RelativeLayout
             android:layout_width="0dp"

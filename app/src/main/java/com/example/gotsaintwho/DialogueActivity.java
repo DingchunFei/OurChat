@@ -1,7 +1,7 @@
 package com.example.gotsaintwho;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.BroadcastReceiver;
@@ -12,16 +12,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.app.Dialog;
+
 
 import com.example.gotsaintwho.adapter.MsgAdapter;
-import com.example.gotsaintwho.dialogue.DialogueQueue;
-import com.example.gotsaintwho.pojo.DialogueMsgDTO;
 import com.example.gotsaintwho.pojo.Msg;
-import com.example.gotsaintwho.pojo.MsgDBPojo;
 import com.example.gotsaintwho.pojo.User;
-import com.example.gotsaintwho.utils.DBUtil;
+import com.example.gotsaintwho.AudioDialogManage;
 
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -30,7 +30,7 @@ public class DialogueActivity extends BaseActivity {
 
     private EditText inputText;
     private Button send;
-    private Button callAudio;
+    private ImageView callAudio;
     private Button recordAudio;
     private RecyclerView msgRecyclerView;
     private MsgAdapter adapter;
@@ -38,6 +38,12 @@ public class DialogueActivity extends BaseActivity {
     private User targetUser = null;
 
     private MsgReceiver msgReceiver;
+    private float y ;
+    private TextView mStateTV;
+    private ImageView mStateIV;
+    private Dialog recordDialog;
+    private static View view;
+    private AudioDialogManage audioDialogManage;
 
     //定义一个广播接收器用来接收新消息
     class MsgReceiver extends BroadcastReceiver {
@@ -100,11 +106,11 @@ public class DialogueActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        user = (User) intent.getSerializableExtra("user_info");
-        targetUser = (User) intent.getSerializableExtra("target_user_info");
+       /* user = (User) intent.getSerializableExtra("user_info");
+        targetUser = (User) intent.getSerializableExtra("target_user_info");*/
 
         //设置toolbar的内容,变成Target user的id
-        getSupportActionBar().setTitle(targetUser.getUsername());
+        /*getSupportActionBar().setTitle(targetUser.getUsername());*/
 
         send = findViewById(R.id.send);
         msgRecyclerView = findViewById(R.id.msg_recycler_view);
@@ -112,7 +118,11 @@ public class DialogueActivity extends BaseActivity {
         recordAudio = findViewById(R.id.btn_record);
         inputText = findViewById(R.id.input_text);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
+
+
+
+        /*LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         msgRecyclerView.setLayoutManager(layoutManager);
         //设置当前的目标用户
         currentTargetUserId = targetUser.getUserId();
@@ -126,7 +136,7 @@ public class DialogueActivity extends BaseActivity {
                 msgs.add(new Msg(msgDBPojo.getContent(),msgDBPojo.getType()));
             }
             msgListMap.put(targetUser.getUserId(),msgs);
-        }
+        }*/
 
         //callAudio button
          callAudio.setOnClickListener(new View.OnClickListener() {
@@ -134,20 +144,83 @@ public class DialogueActivity extends BaseActivity {
             public void onClick(View v) {
                 //callAudio.setText("r");
                 if(recordAudio.isShown()){
-                    System.out.println("recordBtn is show, hide it");
                     recordAudio.setVisibility(View.GONE);
                     inputText.setVisibility(View.VISIBLE);
                 }else{
-                    System.out.println("inputText is show, hide it");
                     inputText.setVisibility(View.GONE);
                     recordAudio.setVisibility(View.VISIBLE);
                 }
             }
         });
+//
+        recordAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showRecorderingDialog();
 
+            }
+        });
+
+
+
+        /*((RecordButton) recordAudio).setOnFinishedRecordListener(new RecordButton.OnFinishedRecordListener() {
+            @Override
+            public void onFinishedRecord(String audioPath, int time) {
+                LogUtil.d("录音结束回调");
+                File file = new File(audioPath);
+                if (file.exists()) {
+                    //sendAudioMessage(audioPath,time);
+                }
+            }
+        });*/
+
+
+
+
+         /*recordAudio.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //if user touch the recordAudio button display the dialogue_audio_record layout
+                y =event.getY();
+
+                // the y value less than 0. The audio message will be cancel
+                if(mStateTV!=null && mStateIV!=null &&y<0){
+                    mStateTV.setText("release fingue to cancel the audio message");
+                    mStateIV.setImageDrawable(getResources().getDrawable(R.drawable.ic_volume_cancel));
+                }else if(mStateTV != null){
+                    mStateTV.setText("手指上滑,取消发送");
+                }
+
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Start
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        // End
+                        break;
+                }
+                return false;
+            }
+        });*/
+
+
+        /*((RecordButton) recordAudio).setOnFinishedRecordListener(new RecordButton.OnFinishedRecordListener() {
+            @Override
+            public void onFinishedRecord(String audioPath, int time) {
+                System.out.println("Record button relased");
+                File file = new File(audioPath);
+                if (file.exists()) {
+                    // TODO: send audio code here in the future
+                    //sendAudioMessage(audioPath,time);
+                }
+            }
+        });*/
+
+
+        /*
         adapter = new MsgAdapter(msgs);
-        msgRecyclerView.setAdapter(adapter);
-        send.setOnClickListener(new View.OnClickListener() {
+        msgRecyclerView.setAdapter(adapter);*/
+        /*send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String content = inputText.getText().toString();
@@ -165,12 +238,21 @@ public class DialogueActivity extends BaseActivity {
                     sendMsg2Server(user, msg, targetUser.getUserId());
                 }
             }
-        });
+        });*/
     }
 
-    private void sendMsg2Server(final User user, final Msg msg, final String targetUserId){
+   /*private void sendMsg2Server(final User user, final Msg msg, final String targetUserId){
         DialogueMsgDTO dialogueMsgDTO = new DialogueMsgDTO(user.getUserId(), targetUserId, msg.getContent());
         //将用户发出的消息发送到服务器！
         DialogueQueue.sendDialogue(dialogueMsgDTO);
+    }*/
+
+    protected void showRecorderingDialog(){
+        AudioDialogManage audioDialogManage = new AudioDialogManage(this);
+        audioDialogManage.showRecorderingDialog();
     }
+
+
+
+
 }
