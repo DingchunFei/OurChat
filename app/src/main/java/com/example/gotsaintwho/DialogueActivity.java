@@ -15,12 +15,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.app.Dialog;
+import android.widget.Toast;
 
 
 import com.example.gotsaintwho.adapter.MsgAdapter;
 import com.example.gotsaintwho.pojo.Msg;
 import com.example.gotsaintwho.pojo.User;
 import com.example.gotsaintwho.AudioDialogManage;
+import com.example.gotsaintwho.widget.AudioRecordButton;
 
 import java.util.List;
 
@@ -152,14 +154,36 @@ public class DialogueActivity extends BaseActivity {
                 }
             }
         });
-//
-        recordAudio.setOnClickListener(new View.OnClickListener() {
+
+        recordAudio.setOnClickListener(new AudioRecordButton.AudioFinishRecorderListener() {
+            @Override
+            public void onFinish(int seconds, String FilePath) {
+
+            }
+
             @Override
             public void onClick(View v) {
                 showRecorderingDialog();
-
             }
         });
+
+
+
+
+      /* ((AudioRecordButton)recordAudio).setAudioFinishRecorderListener(new AudioRecordButton.AudioFinishRecorderListener() {
+           @Override
+           public void onFinish(int seconds, String FilePath) {
+               Toast.makeText(mContext, "发送成功！", Toast.LENGTH_SHORT).show();
+               tb_audioRecorder = new Tb_AudioRecorder(FilePath, seconds);
+               tbAudioRecorderList.add(tb_audioRecorder);
+               booleanList.add(false);
+               audioListAdapter.notifyDataSetChanged();
+           }
+        });*/
+
+
+
+
 
 
 

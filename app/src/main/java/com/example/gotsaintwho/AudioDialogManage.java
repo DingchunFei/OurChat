@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * 录制语音弹窗管理类
+ * manage recording audio layout
  */
 public class AudioDialogManage {
     private Dialog mDialog;
@@ -29,7 +29,7 @@ public class AudioDialogManage {
     }
 
     /**
-     * 默认的对话框的显示
+     * show default recording audio dialog
      */
     public void showRecorderingDialog() {
         mDialog = new Dialog(mContext, R.style.Translucent);
@@ -42,6 +42,74 @@ public class AudioDialogManage {
         mLabel = mDialog.findViewById(R.id.recorder_dialog_label);
         ivVoice = mDialog.findViewById(R.id.recorder_dialog_ivVoice);
         mDialog.show();
+    }
+
+    //Control ImageView and TextView base on the state
+    /**
+     * recording state
+     */
+    public void recording() {
+        if (mDialog != null && mDialog.isShowing()) {
+            mIcon.setVisibility(View.VISIBLE);
+            mTime.setVisibility(View.VISIBLE);
+            mLabel.setVisibility(View.VISIBLE);
+
+            mIcon.setImageResource(R.mipmap.icon_microphone);
+            mLabel.setBackgroundColor(Color.parseColor("#00000000"));
+            mLabel.setText("手指松开 开始发送");
+        }
+    }
+
+    /**
+     * cancel recording state
+     */
+    public void wantToCancel() {
+        if (mDialog != null && mDialog.isShowing()) {
+            mIcon.setVisibility(View.VISIBLE);
+            mTime.setVisibility(View.GONE);
+            mLabel.setVisibility(View.VISIBLE);
+            ivVoice.setVisibility(View.GONE);
+
+            mIcon.setImageResource(R.mipmap.icon_rubbish_bin);
+            mLabel.setBackgroundColor(Color.parseColor("#AF2831"));
+            mLabel.setText("手指上滑 取消发送");
+        }
+    }
+
+    /**
+     * Record too short
+     */
+    public void tooShort() {
+        if (mDialog != null && mDialog.isShowing()) {
+            mIcon.setVisibility(View.VISIBLE);
+            mTime.setVisibility(View.GONE);
+            mLabel.setVisibility(View.VISIBLE);
+            ivVoice.setVisibility(View.GONE);
+
+            mIcon.setImageResource(R.mipmap.icon_punctuation_mark);
+            mLabel.setBackgroundColor(Color.parseColor("#00000000"));
+            mLabel.setText("说话时间太短");
+        }
+    }
+
+    /**
+     * close dialog
+     */
+    public void dismissDialog() {
+        if (mDialog != null && mDialog.isShowing()) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
+    }
+
+    /**
+     * show time
+     * @param time
+     */
+    public void updateCurTime(String time) {
+        if (mDialog != null && mDialog.isShowing()) {
+            mTime.setText(time);
+        }
     }
 
 
