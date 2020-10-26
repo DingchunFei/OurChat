@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.NotificationTarget;
 import com.example.gotsaintwho.BaseActivity;
 import com.example.gotsaintwho.DialogueActivity;
-import com.example.gotsaintwho.GlideApp;
+//import com.example.gotsaintwho.GlideApp;
 import com.example.gotsaintwho.LoginActivity;
 import com.example.gotsaintwho.MyApplication;
 import com.example.gotsaintwho.R;
@@ -103,7 +103,7 @@ public class ReceiverThread extends Thread {
         //从网络读取图片作为头像
         String imgUri = ParamUtil.IMAGE_URI + userId + ".jpg";
 
-        GlideApp.with(MyApplication.getContext()).asBitmap().load(imgUri).into(notificationTarget);
+        //GlideApp.with(MyApplication.getContext()).asBitmap().load(imgUri).into(notificationTarget);
 
         NotificationManager mNotificationManager = (NotificationManager) MyApplication.getContext().getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, notification);

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gotsaintwho.DialogueActivity;
 import com.example.gotsaintwho.MomentActivity;
 import com.example.gotsaintwho.R;
+import com.example.gotsaintwho.VoiceMemoActivity;
 import com.example.gotsaintwho.adapter.MultifunctionAdapter;
 import com.example.gotsaintwho.callbackListener.ViewOnClickListener;
 import com.example.gotsaintwho.pojo.Multifunction;
@@ -55,6 +56,16 @@ public class MultifunctionFragment extends Fragment {
             @Override
             public void execute() {
                 Intent intent = new Intent(getActivity(), MomentActivity.class);
+                intent.putExtra("user_info", user);
+                startActivity(intent);
+            }
+        }));
+
+        //第二个是朋友圈
+        multifunctionList.add(new Multifunction("Voice Memo", R.drawable.plane, new ViewOnClickListener() {
+            @Override
+            public void execute() {
+                Intent intent = new Intent(getActivity(), VoiceMemoActivity.class);
                 intent.putExtra("user_info", user);
                 startActivity(intent);
             }
