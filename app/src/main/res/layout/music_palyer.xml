@@ -8,6 +8,7 @@
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     app:behavior_hideable="true"
     app:behavior_peekHeight="70dp"
+    android:id="@+id/music_player"
     >
 
     <LinearLayout
