@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHolder> {
+    //declare caculateTime class
+    private CaculateTime caculateTime;
     //create Adapter
     private File[] allAudioFiles;
     public AudioAdapter(File[] allFile){
@@ -25,6 +27,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHol
     public AudioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //inflate view holder
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_audio_item,parent,false);
+        caculateTime = new CaculateTime();
         return new AudioViewHolder(view);
     }
 
@@ -33,7 +36,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHol
         //get and assign value to the single audio item
         //name of the file
         holder.item_title.setText(allAudioFiles[position].getName());
-        holder.item_date.setText(allAudioFiles[position].lastModified() +"");
+        holder.item_date.setText(caculateTime.caculateTime(allAudioFiles[position].lastModified()));
 
     }
 
