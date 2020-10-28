@@ -27,6 +27,7 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
         TextView moment_username;
         TextView moment_content;
         TextView moment_location;
+        ImageView btn_add_comment;//添加评论按钮
 
         public ViewHolder(View view) {
             super(view);
@@ -35,6 +36,7 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
             moment_username = view.findViewById(R.id.moment_username);
             moment_content = view.findViewById(R.id.moment_content);
             moment_location = view.findViewById(R.id.moment_location);
+            btn_add_comment = view.findViewById(R.id.btn_add_moment_comment);//添加评论按钮
         }
     }
 
@@ -66,6 +68,13 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
             holder.moment_location.setVisibility(View.VISIBLE);
             holder.moment_location.setText(moment.getLocation());
         }
+
+        holder.btn_add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override

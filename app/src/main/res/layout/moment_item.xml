@@ -52,5 +52,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left" />
+
+        <ImageView
+            android:id="@+id/btn_add_moment_comment"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_add_comment"
+            android:layout_gravity="right|bottom" />
     </LinearLayout>
 </LinearLayout>
