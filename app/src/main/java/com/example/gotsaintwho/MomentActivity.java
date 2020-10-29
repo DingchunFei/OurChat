@@ -27,12 +27,15 @@ import com.example.gotsaintwho.pojo.User;
 import com.example.gotsaintwho.utils.DBUtil;
 import com.example.gotsaintwho.utils.JsonUtil;
 import com.example.gotsaintwho.utils.ParamUtil;
+import com.example.gotsaintwho.view.LikeListView;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.gotsaintwho.utils.HttpUtil.sendRequestWithHttpURLConnection;
 
@@ -41,6 +44,7 @@ public class MomentActivity extends AppCompatActivity {
     private static final String TAG = "MomentActivity";
 
     private List<Moment> moments = new ArrayList<>();
+    Map<Moment, List<User>> likeListMap = new HashMap<>();//所有pyq的点赞列表
     RecyclerView momentRecyclerView;
     FloatingActionButton fab;
     MomentAdapter momentAdapter;
@@ -67,8 +71,27 @@ public class MomentActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(MomentActivity.this);
         momentRecyclerView.setLayoutManager(layoutManager);
 
-        momentAdapter = new MomentAdapter(moments);
+        System.out.print("========MomentActivity onCreate========= ");
+        momentAdapter = new MomentAdapter(moments, user, likeListMap);
         momentRecyclerView.setAdapter(momentAdapter);
+        momentAdapter.setOnItemClickListener(new MomentAdapter.OnItemClickListener(){
+            @Override
+            public void onItemClick(View view, int position) {
+                System.out.print("======moment activity========= " + position+ " ");
+                System.out.println(view);
+                addLike(position);
+            }
+
+            @Override
+            public void onItemClick(View view, LikeListView likeListView, int position){
+//                System.out.print("======moment activity========= " + position+ " ");
+//                System.out.println(view);
+//                likeListView.setText("aa");
+//                List<User> list = new ArrayList<>();
+//                likeListView.setList(list);
+            }
+        });
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         //pyq每条的分割线
@@ -114,6 +137,7 @@ public class MomentActivity extends AppCompatActivity {
                 //收到moments
                 moments.clear();
                 moments.addAll(JsonUtil.json2MomentList(response));
+                getAllLikeList();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -145,4 +169,26 @@ public class MomentActivity extends AppCompatActivity {
         return allUserId;
     }
 
+    //刷新所有点赞列表
+    private void getAllLikeList(){
+        likeListMap.clear();
+        for(Moment moment: moments){
+            List<User> likeList = new ArrayList<>();
+            likeList.add(user);
+            likeListMap.put(moment, likeList);
+        }
+    }
+
+    //点赞
+    private void addLike(int position){
+        Moment moment = moments.get(position);
+        if(moment == null)
+            return;
+        if(!likeListMap.containsKey(moment))
+            return;
+        List<User> likeList = likeListMap.get(moment);
+        likeList.add(user);
+        likeListMap.put(moment, likeList);
+        momentAdapter.notifyItemChanged(position);
+    }
 }
