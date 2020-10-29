@@ -18,10 +18,14 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHol
     private CaculateTime caculateTime;
     //create Adapter
     private File[] allAudioFiles;
-    public AudioAdapter(File[] allFile){
+    private onItemListClick onItemListClick;
+    public AudioAdapter(File[] allFile,onItemListClick onItemListClick){
         //assign the vale file from adpater
         this.allAudioFiles = allFile;
+        this.onItemListClick = onItemListClick;
     }
+
+
     @NonNull
     @Override
     public AudioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -46,7 +50,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHol
         return allAudioFiles.length;
     }
 
-    public class AudioViewHolder extends RecyclerView.ViewHolder {
+    public class AudioViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener {
     //get all the single audio item
         private ImageView item_button_image ;
         private TextView item_title;
@@ -58,8 +62,21 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHol
             item_button_image = itemView.findViewById(R.id.single_item_button_image);
             item_title = itemView.findViewById(R.id.single_item_title);
             item_date = itemView.findViewById(R.id.single_item_date);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            onItemListClick.onClickListener(allAudioFiles[getAbsoluteAdapterPosition()], getAbsoluteAdapterPosition());
+
         }
 
     }
+
+    public interface onItemListClick{
+        void onClickListener(File file, int position);
+    }
+
+
 
 }

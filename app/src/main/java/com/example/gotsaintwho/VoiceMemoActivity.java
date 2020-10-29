@@ -34,6 +34,8 @@ public class VoiceMemoActivity extends AppCompatActivity {
     private TextView filenameText;
 
     private String recordPermission = Manifest.permission.RECORD_AUDIO;
+    private String writeExternalStorage = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    private String readExternalStorage =Manifest.permission.READ_EXTERNAL_STORAGE;
     private int PERMISSION_CODE = 21;
 
     private MediaRecorder mediaRecorder;
@@ -67,20 +69,23 @@ public class VoiceMemoActivity extends AppCompatActivity {
                     recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_btn_stopped, null));
                     isRecording = false;
                 } else {
-                    if(checkPermissions()){
-                        startRecording();
-                        recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_btn_recording, null));
-                        isRecording = true;
+                    if(checkRecordPermissions()){
+                        if(checkWriteExternalStorage()){
+                            if(checkReadExternalStorage()){
+                                startRecording();
+                                recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_btn_recording, null));
+                                isRecording = true;
+                            }
+
+                        }
                     }
-
                 }
-
             }
         });
 
     }//end onCreate
 
-    private boolean checkPermissions() {
+    private boolean checkRecordPermissions() {
         if(ActivityCompat.checkSelfPermission(this, recordPermission) == PackageManager.PERMISSION_GRANTED) {
             return true;
         } else {
@@ -88,7 +93,26 @@ public class VoiceMemoActivity extends AppCompatActivity {
             return false;
         }
     }
+    private boolean checkWriteExternalStorage() {
+        if(ActivityCompat.checkSelfPermission(this, writeExternalStorage) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{writeExternalStorage}, PERMISSION_CODE);
+            return false;
+        }
+    }
+    private boolean checkReadExternalStorage() {
+        if(ActivityCompat.checkSelfPermission(this, readExternalStorage) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{readExternalStorage}, PERMISSION_CODE);
+            return false;
+        }
+    }
+
+
     private void stopRecording() {
+        //stop recording
         timer.stop();
         filenameText.setText("Recording Stopped, File Saved : " + recordFile);
         mediaRecorder.stop();
@@ -115,11 +139,12 @@ public class VoiceMemoActivity extends AppCompatActivity {
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
+            //record audio
             mediaRecorder.prepare();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        //start recording
         mediaRecorder.start();
     }
 
