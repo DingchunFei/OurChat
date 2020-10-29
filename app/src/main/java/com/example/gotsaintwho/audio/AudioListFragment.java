@@ -27,6 +27,7 @@ public class AudioListFragment extends Fragment implements AudioAdapter.onItemLi
     private BottomSheetBehavior musicPlayerLayoutBehavior;
     private RecyclerView audioList;
     private File[] allAudioFiles;
+    //MediaPlayer
     private MediaPlayer mediaPlayer = null;
     private boolean isPlaying = false;
     private File fileToPlay = null;
