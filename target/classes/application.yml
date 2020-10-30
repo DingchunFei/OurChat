@@ -1,14 +1,14 @@
+---
 server:
   port: 8071
 spring:
   application:
-    name: gotSaintWho #指定服务名
+    name: gotSaintWho
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://8.210.28.169:8050/gotsaintwho?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT
-    #url: jdbc:mysql://localhost:3306/gotsaintwho?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT
-    username: root
     password: 123456
+    url: "jdbc:mysql://8.210.28.169:8050/gotsaintwho?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT"
+    username: root
   jpa:
     database: MySQL
     show-sql: true
@@ -16,8 +16,6 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 1000MB
-
-
 system:
   config:
-    # imageSavePath: /usr/local/androidImages/
+    imageSavePath: /usr/local/androidImages/
