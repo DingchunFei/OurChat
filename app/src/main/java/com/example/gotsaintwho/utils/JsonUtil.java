@@ -6,7 +6,12 @@ import android.util.Log;
 
 import com.example.gotsaintwho.pojo.AllUserIdDTO;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
+import com.example.gotsaintwho.pojo.Like;
+import com.example.gotsaintwho.pojo.LikeDTO;
 import com.example.gotsaintwho.pojo.Moment;
+import com.example.gotsaintwho.pojo.MomentIds;
+import com.example.gotsaintwho.pojo.Reply;
+import com.example.gotsaintwho.pojo.ReplyDTO;
 import com.example.gotsaintwho.pojo.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -19,6 +24,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JsonUtil {
     private static final String TAG = "JsonUtil";
@@ -73,6 +79,29 @@ public class JsonUtil {
     public static String userId2JsonStr(AllUserIdDTO allUserId){
         String jsonStr = gson.toJson(allUserId, AllUserIdDTO.class);
         return jsonStr;
+    }
+
+    public static ReplyDTO json2ReplyDTO(String json){
+        ReplyDTO replyDTO = new ReplyDTO();
+        Map<Integer, List<Reply>> replyMap = replyDTO.getReplyMap();
+        Gson gson = new Gson();
+        replyMap =  gson.fromJson(json, replyMap.getClass());
+        replyDTO.setReplyMap(replyMap);
+        return replyDTO;
+    }
+
+    public static String momentIds2Json(MomentIds momentIds){
+        Gson gson = new Gson();
+        return gson.toJson(momentIds);
+    }
+
+    public static LikeDTO json2LikeDTO(String json){
+        LikeDTO likeDTO = new LikeDTO();
+        Map<Integer, List<Like>> likeListMap = likeDTO.getLikeMap();
+        Gson gson = new Gson();
+        likeListMap = gson.fromJson(json, likeListMap.getClass());
+        likeDTO.setLikeMap(likeListMap);
+        return likeDTO;
     }
 
 /*    public static String json2MomentImgId(String jsonStr){

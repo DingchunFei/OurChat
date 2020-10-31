@@ -1,5 +1,6 @@
 package com.example.gotsaintwho.adapter;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.example.gotsaintwho.MyApplication;
 import com.example.gotsaintwho.R;
 import com.example.gotsaintwho.pojo.Moment;
 import com.example.gotsaintwho.pojo.Msg;
+import com.example.gotsaintwho.pojo.Reply;
 import com.example.gotsaintwho.pojo.User;
 import com.example.gotsaintwho.utils.ParamUtil;
 import com.example.gotsaintwho.view.LikeListView;
@@ -26,7 +28,9 @@ import java.util.*;
 public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder> {
     private List<Moment> mMomentList;
     private Map<Moment, List<User>> likeListMap;
+    private Map<Integer, List<Reply>> replyListMap;
     private User me;
+    private boolean isLike = false;//是否点赞
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView moment_avatar;
@@ -96,6 +100,15 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
                 @Override
                 public void onClick(View view) {
                     int pos = holder.getLayoutPosition();//当前Item列数
+                    if(isLike){
+                        isLike = false;
+                        holder.btn_like_comment.setColorFilter(Color.parseColor("#aaaaaa"));
+                    }
+                    else {
+                        isLike = true;
+                        holder.btn_like_comment.setColorFilter(Color.parseColor("#FF5C5C"));
+                    }
+
                     mOnItemClickListener.onItemClick(view, pos);
                 }
             });
@@ -137,7 +150,7 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
     public interface OnItemClickListener{
         void onItemClick(View view, int position);
 
-        void onItemClick(View view, LikeListView likeListView, int position);
+//        void onItemClick(View view, LikeListView likeListView, int position);
 
 //        void onItemLongClick(View view, int position);
     }

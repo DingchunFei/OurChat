@@ -21,8 +21,12 @@ import com.bumptech.glide.Glide;
 import com.example.gotsaintwho.adapter.MomentAdapter;
 import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
 import com.example.gotsaintwho.pojo.AllUserIdDTO;
+import com.example.gotsaintwho.pojo.LikeDTO;
 import com.example.gotsaintwho.pojo.Moment;
+import com.example.gotsaintwho.pojo.MomentIds;
 import com.example.gotsaintwho.pojo.Msg;
+import com.example.gotsaintwho.pojo.Reply;
+import com.example.gotsaintwho.pojo.ReplyDTO;
 import com.example.gotsaintwho.pojo.User;
 import com.example.gotsaintwho.utils.DBUtil;
 import com.example.gotsaintwho.utils.JsonUtil;
@@ -81,15 +85,6 @@ public class MomentActivity extends AppCompatActivity {
                 System.out.println(view);
                 addLike(position);
             }
-
-            @Override
-            public void onItemClick(View view, LikeListView likeListView, int position){
-//                System.out.print("======moment activity========= " + position+ " ");
-//                System.out.println(view);
-//                likeListView.setText("aa");
-//                List<User> list = new ArrayList<>();
-//                likeListView.setList(list);
-            }
         });
 
 
@@ -130,7 +125,8 @@ public class MomentActivity extends AppCompatActivity {
         //从数据库找出所有的好友id并转化为Json格式
         List<String> allUserId = getAllUserId();
         String jsonStr = JsonUtil.userId2JsonStr(new AllUserIdDTO(allUserId));
-
+        System.out.print("==========MomentActivity=====refreshMoment====== ");
+        System.out.println(jsonStr);
         sendRequestWithHttpURLConnection("moment", jsonStr, new HttpCallbackListener() {
             @Override
             public void onFinish(String response) {
@@ -145,6 +141,26 @@ public class MomentActivity extends AppCompatActivity {
                         swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
                     }
                 });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+            }
+        });
+
+        //获得所有pyq的点赞信息
+
+
+        //获得所有pyq的评论
+        String userJson = JsonUtil.user2Json(user);
+        sendRequestWithHttpURLConnection("reply/findAllReplies", userJson, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                //收到replies
+                System.out.print("===========reply/findAllReplies============");
+                ReplyDTO replyDTO = JsonUtil.json2ReplyDTO(response);
+                System.out.println(replyDTO.getReplyMap().toString());
             }
 
             @Override
@@ -172,11 +188,36 @@ public class MomentActivity extends AppCompatActivity {
     //刷新所有点赞列表
     private void getAllLikeList(){
         likeListMap.clear();
+        MomentIds momentIds = new MomentIds();
+        List<Integer> momentIdList = new ArrayList<>();
         for(Moment moment: moments){
-            List<User> likeList = new ArrayList<>();
-            likeList.add(user);
-            likeListMap.put(moment, likeList);
+            momentIdList.add(Integer.valueOf(moment.getMomentId()));
         }
+        momentIds.setMomentIds(momentIdList);
+
+        String json = JsonUtil.momentIds2Json(momentIds);
+
+        sendRequestWithHttpURLConnection("like/findAllLikes", json, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                //收到likes
+                System.out.print("===========reply/findAllLikes============");
+                LikeDTO likeDTO = JsonUtil.json2LikeDTO(response);
+                System.out.println(likeDTO.getLikeMap().toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        momentAdapter.notifyDataSetChanged();
+                        swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+            }
+        });
     }
 
     //点赞
