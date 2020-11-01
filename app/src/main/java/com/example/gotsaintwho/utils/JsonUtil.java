@@ -83,11 +83,8 @@ public class JsonUtil {
     }
 
     public static ReplyDTO json2ReplyDTO(String json){
-        ReplyDTO replyDTO = new ReplyDTO();
-        Map<Integer, List<Reply>> replyMap = replyDTO.getReplyMap();
         Gson gson = new Gson();
-        replyMap =  gson.fromJson(json, replyMap.getClass());
-        replyDTO.setReplyMap(replyMap);
+        ReplyDTO replyDTO =  gson.fromJson(json, ReplyDTO.class);
         return replyDTO;
     }
 
