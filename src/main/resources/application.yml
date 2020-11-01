@@ -1,3 +1,4 @@
+---
 server:
   port: 8071
 spring:
@@ -6,9 +7,8 @@ spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
     password: 123456
-    url: "jdbc:mysql://8.210.28.169:8050/gotsaintwho?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone = GMT"
+    url: jdbc:mysql://8.210.28.169:8050/gotsaintwho?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT
     username: root
-    name: gotSaintWho #指定服务名
   jpa:
     database: MySQL
     show-sql: true
