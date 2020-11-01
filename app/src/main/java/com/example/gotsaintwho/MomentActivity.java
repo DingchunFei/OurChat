@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.example.gotsaintwho.adapter.MomentAdapter;
 import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
 import com.example.gotsaintwho.pojo.AllUserIdDTO;
+import com.example.gotsaintwho.pojo.Like;
 import com.example.gotsaintwho.pojo.LikeDTO;
 import com.example.gotsaintwho.pojo.Moment;
 import com.example.gotsaintwho.pojo.MomentIds;
@@ -48,7 +49,7 @@ public class MomentActivity extends AppCompatActivity {
     private static final String TAG = "MomentActivity";
 
     private List<Moment> moments = new ArrayList<>();
-    Map<Moment, List<User>> likeListMap = new HashMap<>();//所有pyq的点赞列表
+    private Map<Integer, List<Like>> likeListMap = new HashMap<>();//所有pyq的点赞列表
     RecyclerView momentRecyclerView;
     FloatingActionButton fab;
     MomentAdapter momentAdapter;
@@ -80,11 +81,17 @@ public class MomentActivity extends AppCompatActivity {
         momentRecyclerView.setAdapter(momentAdapter);
         momentAdapter.setOnItemClickListener(new MomentAdapter.OnItemClickListener(){
             @Override
-            public void onItemClick(View view, int position) {
-                System.out.print("======moment activity========= " + position+ " ");
-                System.out.println(view);
+            public void doLike(View view, int position) {
+                System.out.println("======doLike========= " + position+ " ");
                 addLike(position);
             }
+
+            @Override
+            public void doUnlike(View view, int position) {
+                System.out.println("======doUnlike========= " + position+ " ");
+                deleteLike(position);
+            }
+
         });
 
 
@@ -133,34 +140,16 @@ public class MomentActivity extends AppCompatActivity {
                 //收到moments
                 moments.clear();
                 moments.addAll(JsonUtil.json2MomentList(response));
-                getAllLikeList();
+//                System.out.println(moments.toString());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         momentAdapter.notifyDataSetChanged();
+                        getAllLikeList();
+                        getAllReplyList();
                         swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
                     }
                 });
-            }
-
-            @Override
-            public void onError(Exception e) {
-                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
-            }
-        });
-
-        //获得所有pyq的点赞信息
-
-
-        //获得所有pyq的评论
-        String userJson = JsonUtil.user2Json(user);
-        sendRequestWithHttpURLConnection("reply/findAllReplies", userJson, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String response) {
-                //收到replies
-                System.out.print("===========reply/findAllReplies============");
-                ReplyDTO replyDTO = JsonUtil.json2ReplyDTO(response);
-                System.out.println(replyDTO.getReplyMap().toString());
             }
 
             @Override
@@ -185,9 +174,42 @@ public class MomentActivity extends AppCompatActivity {
         return allUserId;
     }
 
+    private void getAllReplyList(){
+        //获得所有pyq的评论
+        MomentIds momentIds = new MomentIds();
+        List<Integer> momentIdList = new ArrayList<>();
+        for(Moment moment: moments){
+            momentIdList.add(Integer.valueOf(moment.getMomentId()));
+        }
+        momentIds.setMomentIds(momentIdList);
+
+        String json = JsonUtil.momentIds2Json(momentIds);
+
+        sendRequestWithHttpURLConnection("reply/findAllReplies", json, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                //收到replies
+                System.out.print("===========reply/findAllReplies============");
+                ReplyDTO replyDTO = JsonUtil.json2ReplyDTO(response);
+                System.out.println(replyDTO.getReplyMap().toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        momentAdapter.notifyDataSetChanged();
+                        swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+            }
+        });
+    }
+
     //刷新所有点赞列表
     private void getAllLikeList(){
-        likeListMap.clear();
         MomentIds momentIds = new MomentIds();
         List<Integer> momentIdList = new ArrayList<>();
         for(Moment moment: moments){
@@ -201,9 +223,11 @@ public class MomentActivity extends AppCompatActivity {
             @Override
             public void onFinish(String response) {
                 //收到likes
-                System.out.print("===========reply/findAllLikes============");
+                System.out.print("===========like/findAllLikes============");
                 LikeDTO likeDTO = JsonUtil.json2LikeDTO(response);
                 System.out.println(likeDTO.getLikeMap().toString());
+                likeListMap.clear();
+                likeListMap.putAll(likeDTO.getLikeMap());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -221,15 +245,95 @@ public class MomentActivity extends AppCompatActivity {
     }
 
     //点赞
-    private void addLike(int position){
+    private void addLike(final int position){
         Moment moment = moments.get(position);
-        if(moment == null)
+        Like like = new Like();
+        Integer momentID = Integer.valueOf(moment.getMomentId());
+        //Like对象赋值
+        like.setMomentId(momentID);
+        like.setUserId(Integer.valueOf(user.getUserId()));
+        like.setUserName(user.getUsername());
+
+        System.out.print("===========like/addLike============");
+        String json = JsonUtil.like2Json(like);
+
+        System.out.println(json);
+
+        //网络请求
+        sendRequestWithHttpURLConnection("like/addLike", json, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                //收到like
+                Like like = JsonUtil.json2Like(response);
+                //更新adapter中的map
+                List<Like> likeList = likeListMap.get(like.getMomentId());
+                likeList.add(like);
+                likeListMap.put(like.getMomentId(), likeList);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        momentAdapter.notifyItemChanged(position);
+                        swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+            }
+        });
+    }
+
+    //取消点赞
+    private void deleteLike(final int position){
+        Moment moment = moments.get(position);
+        Integer momentID = Integer.valueOf(moment.getMomentId());
+        //Like对象赋值
+        List<Like> likeList = likeListMap.get(momentID);
+        Like like = null;
+        for(Like cur: likeList){
+            if(cur.getUserId() == Integer.valueOf(user.getUserId())){
+                like = cur;
+            }
+        }
+
+        if(like == null)
             return;
-        if(!likeListMap.containsKey(moment))
-            return;
-        List<User> likeList = likeListMap.get(moment);
-        likeList.add(user);
-        likeListMap.put(moment, likeList);
-        momentAdapter.notifyItemChanged(position);
+
+        System.out.print("===========like/deleteLike============");
+        String json = JsonUtil.like2Json(like);
+
+        System.out.println(json);
+
+        //网络请求
+        sendRequestWithHttpURLConnection("like/deleteLike", json, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                //收到like
+                Like like = JsonUtil.json2Like(response);
+                //更新adapter中的map
+                List<Like> likeList = likeListMap.get(like.getMomentId());
+                for(Like cur: likeList){
+                    if(cur.getUserId() == like.getUserId()){
+                        likeList.remove(cur);
+                        break;
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        momentAdapter.notifyItemChanged(position);
+                        swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+            }
+        });
     }
 }

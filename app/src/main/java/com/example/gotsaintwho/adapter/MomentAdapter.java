@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.gotsaintwho.MyApplication;
 import com.example.gotsaintwho.R;
+import com.example.gotsaintwho.pojo.Like;
 import com.example.gotsaintwho.pojo.Moment;
 import com.example.gotsaintwho.pojo.Msg;
 import com.example.gotsaintwho.pojo.Reply;
@@ -27,10 +28,10 @@ import java.util.*;
 
 public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder> {
     private List<Moment> mMomentList;
-    private Map<Moment, List<User>> likeListMap;
+    private Map<Integer, List<Like>> likeListMap;
+    private Map<Integer, Boolean> hadLiked = new HashMap<>();//key: position, value: 是否点赞
     private Map<Integer, List<Reply>> replyListMap;
     private User me;
-    private boolean isLike = false;//是否点赞
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView moment_avatar;
@@ -55,7 +56,7 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
         }
     }
 
-    public MomentAdapter(List<Moment> msgList, User me, Map<Moment, List<User>> likeListMap) {
+    public MomentAdapter(List<Moment> msgList, User me, Map<Integer, List<Like>> likeListMap) {
         mMomentList = msgList;
         this.me = me;
         this.likeListMap = likeListMap;
@@ -68,7 +69,7 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         Moment moment = mMomentList.get(position);
 
         holder.moment_username.setText(moment.getUsername());
@@ -86,43 +87,65 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
             holder.moment_location.setText(moment.getLocation());
         }
 
-        List<User> likeList = new ArrayList<>();
-        if(likeListMap.containsKey(moment)){
-            likeList = likeListMap.get(moment);
-        }
         System.out.print("======onBindViewHolder====== ");
-        System.out.println(likeListMap.toString());
-        System.out.println(likeList.toString());
-        holder.likeListView.setList(likeList);
+
+        List<Like> likeList = likeListMap.get(Integer.valueOf(moment.getMomentId()));
+
+        if (likeList != null){
+            List<Like> cur = holder.likeListView.getList();
+            System.out.println(position+" Cur like: "+cur.toString()+ " : " + likeList.toString());
+            cur.clear();
+            holder.likeListView.setText("");
+            cur.addAll(likeList);
+            holder.likeListView.setList(cur);
+            System.out.println(position+" likeListView: "+holder.likeListView.getList().toString());
+        }
+
+        //用户是否已点赞
+        hadLiked.put(position, false);
+        if(likeList != null){
+            for(Like like: likeList){
+                if(like.getUserId() == Integer.valueOf(me.getUserId())){
+                    hadLiked.put(position, true);
+                    break;
+                }
+            }
+        }
+        //根据是否点赞改变按钮颜色
+        if(hadLiked.get(position)){
+            holder.btn_like_comment.setColorFilter(Color.parseColor("#FF5C5C"));
+        }
+        else {
+            holder.btn_like_comment.setColorFilter(Color.parseColor("#aaaaaa"));
+        }
+
         //对item控件进行点击事件的监听并回调给自定义的监听
         if (mOnItemClickListener != null) {
             holder.btn_like_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int pos = holder.getLayoutPosition();//当前Item列数
-                    if(isLike){
-                        isLike = false;
+                    if(hadLiked.get(position)){//已点赞,则取消点赞
+                        hadLiked.put(position, false);
                         holder.btn_like_comment.setColorFilter(Color.parseColor("#aaaaaa"));
+                        mOnItemClickListener.doUnlike(view, position);
                     }
                     else {
-                        isLike = true;
+                        hadLiked.put(position, true);
                         holder.btn_like_comment.setColorFilter(Color.parseColor("#FF5C5C"));
+                        mOnItemClickListener.doLike(view, position);
                     }
-
-                    mOnItemClickListener.onItemClick(view, pos);
                 }
             });
         }
 
-        //点击添加评论按钮的监听事件
-//        holder.btn_add_comment.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                System.out.print("=============add comment ");
-////                System.out.print(" To: "+moment.getUsername());
-//                System.out.println(" From: "+me.getUsername());
-//            }
-//        });
+//        点击添加评论按钮的监听事件
+        holder.btn_add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.print("=============add comment======== ");
+                System.out.println(holder.likeListView.getText());
+            }
+        });
 
         //点赞按钮的监听事件
 //        holder.btn_like_comment.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +171,8 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
     private OnItemClickListener mOnItemClickListener;
     //在里面实现具体的点击响应事件，同时传入两个参数：view和postion
     public interface OnItemClickListener{
-        void onItemClick(View view, int position);
+        void doLike(View view, int position);
+        void doUnlike(View view, int position);
 
 //        void onItemClick(View view, LikeListView likeListView, int position);
 

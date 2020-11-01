@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,12 +97,21 @@ public class JsonUtil {
     }
 
     public static LikeDTO json2LikeDTO(String json){
-        LikeDTO likeDTO = new LikeDTO();
-        Map<Integer, List<Like>> likeListMap = likeDTO.getLikeMap();
         Gson gson = new Gson();
-        likeListMap = gson.fromJson(json, likeListMap.getClass());
-        likeDTO.setLikeMap(likeListMap);
+        LikeDTO likeDTO = gson.fromJson(json, LikeDTO.class);
         return likeDTO;
+    }
+
+    public static Like json2Like(String json){
+        Gson gson = new Gson();
+        Like like = gson.fromJson(json, Like.class);
+        return like;
+    }
+
+    public static String like2Json(Like like){
+        Gson gson = new Gson();
+        String json = gson.toJson(like);
+        return json;
     }
 
 /*    public static String json2MomentImgId(String jsonStr){

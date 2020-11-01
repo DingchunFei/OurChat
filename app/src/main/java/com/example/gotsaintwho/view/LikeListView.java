@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import androidx.annotation.Nullable;
 
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -17,13 +18,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.gotsaintwho.R;
+import com.example.gotsaintwho.pojo.Like;
 import com.example.gotsaintwho.pojo.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LikeListView extends androidx.appcompat.widget.AppCompatTextView {
     private Context mContext;
-    private List<User> list;
+    private List<Like> list = new ArrayList<>();
 
     public LikeListView(Context context) {
         this(context, null);
@@ -37,12 +40,13 @@ public class LikeListView extends androidx.appcompat.widget.AppCompatTextView {
         super(context, attrs, defStyleAttr);
         mContext = context;
     }
+
     /**
      * 设置点赞数据
      *
      * @param list
      */
-    public void setList(List<User> list) {
+    public void setList(List<Like> list) {
         this.list = list;
         notifyDataSetChanged();
     }
@@ -51,7 +55,7 @@ public class LikeListView extends androidx.appcompat.widget.AppCompatTextView {
      *
      * @param
      */
-    public List<User> getList() {
+    public List<Like> getList() {
         return this.list;
     }
 
@@ -65,8 +69,8 @@ public class LikeListView extends androidx.appcompat.widget.AppCompatTextView {
         SpannableStringBuilder builder = new SpannableStringBuilder();
 //        builder.append(setImageSpan());
         for (int i = 0; i < list.size(); i++) {
-            User item = list.get(i);
-            builder.append(setClickableSpan(item.getUsername(), item));
+            Like item = list.get(i);
+            builder.append(setClickableSpan(item.getUserName(), item));
             if (i != list.size() - 1) {
                 builder.append(" , ");
             } else {
@@ -74,6 +78,7 @@ public class LikeListView extends androidx.appcompat.widget.AppCompatTextView {
             }
         }
 
+        list.clear();
         setText(builder);
 //        setMovementMethod(new CircleMovementMethod(0xffcccccc, 0xffcccccc));
 //        setMovementMethod(LinkMovementMethod.getInstance());
@@ -86,7 +91,7 @@ public class LikeListView extends androidx.appcompat.widget.AppCompatTextView {
      * @param bean
      * @return
      */
-    public SpannableString setClickableSpan(final String item, final User bean) {
+    public SpannableString setClickableSpan(final String item, final Like bean) {
         final SpannableString string = new SpannableString(item);
         ClickableSpan span = new ClickableSpan() {
             @Override
@@ -133,6 +138,6 @@ public class LikeListView extends androidx.appcompat.widget.AppCompatTextView {
     }
 
     public interface onItemClickListener {
-        void onItemClick(int position, User bean);
+        void onItemClick(int position, Like bean);
     }
 }
