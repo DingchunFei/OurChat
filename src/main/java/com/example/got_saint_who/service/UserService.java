@@ -2,7 +2,6 @@ package com.example.got_saint_who.service;
 
 import com.example.got_saint_who.dao.UserDao;
 import com.example.got_saint_who.pojo.User;
-//import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
