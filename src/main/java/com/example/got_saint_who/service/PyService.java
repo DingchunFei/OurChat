@@ -25,8 +25,8 @@ public class PyService {
         return pyDao.findByPyIdFirst(userId);
     }
 
-    public void save(Py py){
-        pyDao.save(py);
+    public Py save(Py py){
+        return pyDao.save(py);
     }
 
     public void delete(Py py){

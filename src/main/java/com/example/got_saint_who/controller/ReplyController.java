@@ -1,8 +1,6 @@
 package com.example.got_saint_who.controller;
 
-import com.example.got_saint_who.pojo.Friends;
-import com.example.got_saint_who.pojo.ReplyDTO;
-import com.example.got_saint_who.pojo.User;
+import com.example.got_saint_who.pojo.*;
 import com.example.got_saint_who.service.ReplyServive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +19,19 @@ public class ReplyController {
     @Autowired
     ReplyServive replyServive;
 
-    @RequestMapping(value = "/FindAllReplies", method= RequestMethod.POST)
-    public ReplyDTO findAllReplies(@RequestBody User user){
-        return replyServive.findAllReplies(user);
+    @RequestMapping(value = "/findAllReplies", method= RequestMethod.POST)
+    public ReplyDTO findAllReplies(@RequestBody MomentIds momentIds){
+        return replyServive.findAllReplies(momentIds);
+    }
+
+    @RequestMapping(value = "/addReply", method= RequestMethod.POST)
+    public Reply addReply(@RequestBody Reply reply){
+        return replyServive.save(reply);
+    }
+
+    @RequestMapping(value = "/deleteReply", method= RequestMethod.POST)
+    public Reply deleteReply(@RequestBody Reply reply){
+        replyServive.delete(reply);
+        return reply;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.got_saint_who.pojo;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,5 +11,15 @@ import java.util.Map;
  */
 
 public class LikeDTO {
-    private Map<Integer, Like> likeMap;
+    private Map<Integer, List<Like>> likeMap;
+
+    public Map<Integer, List<Like>> getLikeMap() {
+        if(likeMap == null)
+            return new HashMap<>();
+        return likeMap;
+    }
+
+    public void setLikeMap(Map<Integer, List<Like>> likeMap) {
+        this.likeMap = likeMap;
+    }
 }

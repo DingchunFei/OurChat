@@ -25,4 +25,9 @@ public class PyController {
     public List<Py> findFriends(@RequestBody User user){
         return pyService.findAllFriendById(user.getUserId());
     }
+
+    @RequestMapping(value = "/addFriend", method = RequestMethod.POST)
+    public Py addFriend(@RequestBody Py py){
+        return pyService.save(py);
+    }
 }
