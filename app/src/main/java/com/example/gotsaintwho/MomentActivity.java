@@ -298,7 +298,7 @@ public class MomentActivity extends AppCompatActivity {
         System.out.print("===========like/addLike============");
         String json = JsonUtil.like2Json(like);
 
-        System.out.println(json);
+//        System.out.println(json);
 
         //网络请求
         sendRequestWithHttpURLConnection("like/addLike", json, new HttpCallbackListener() {
@@ -349,7 +349,7 @@ public class MomentActivity extends AppCompatActivity {
         System.out.print("===========like/deleteLike============");
         String json = JsonUtil.like2Json(like);
 
-        System.out.println(json);
+//        System.out.println(json);
 
         //网络请求
         sendRequestWithHttpURLConnection("like/deleteLike", json, new HttpCallbackListener() {
@@ -397,8 +397,7 @@ public class MomentActivity extends AppCompatActivity {
         System.out.print(" ===========reply/addReply============ ");
         String json = JsonUtil.reply2Json(reply);
 
-        System.out.println(json);
-
+//        System.out.println(json);
         //网络请求
         sendRequestWithHttpURLConnection("reply/addReply", json, new HttpCallbackListener() {
             @Override

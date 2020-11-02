@@ -124,17 +124,17 @@ public class MomentAdapter extends RecyclerView.Adapter<MomentAdapter.ViewHolder
 
         //回复评论
         List<Reply> replyList = replyListMap.get(Integer.valueOf(moment.getMomentId()));
+        System.out.print(position+" replyList: ");
+        if(replyList != null && replyList.size() > 0){
+            System.out.println(replyList.toString());
+        }
+
         //调整尺寸
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
         holder.replyListView.setLayoutManager(layoutManager);
 //            ViewGroup.LayoutParams layoutParams = holder.replyListView.getLayoutParams();
         final ReplyAdapter replyAdapter = new ReplyAdapter(replyList, me);
         holder.replyListView.setAdapter(replyAdapter);
-
-        System.out.print(position+" replyList: ");
-        if(replyList != null && replyList.size() > 0){
-            System.out.println(replyList.toString());
-        }
 
         //对item控件进行点击事件的监听并回调给自定义的监听
         if (mOnItemClickListener != null) {
