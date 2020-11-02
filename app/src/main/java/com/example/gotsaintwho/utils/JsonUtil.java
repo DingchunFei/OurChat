@@ -111,6 +111,18 @@ public class JsonUtil {
         return json;
     }
 
+    public static String reply2Json(Reply reply){
+        Gson gson = new Gson();
+        String json = gson.toJson(reply);
+        return json;
+    }
+
+    public static Reply json2Reply(String json){
+        Gson gson = new Gson();
+        Reply reply = gson.fromJson(json, Reply.class);
+        return reply;
+    }
+
 /*    public static String json2MomentImgId(String jsonStr){
         try {
             JSONObject jsonObject=new JSONObject(jsonStr);

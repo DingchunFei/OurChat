@@ -12,8 +12,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -34,6 +38,7 @@ import com.example.gotsaintwho.utils.JsonUtil;
 import com.example.gotsaintwho.utils.ParamUtil;
 import com.example.gotsaintwho.view.LikeListView;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.JsonObject;
 
@@ -50,10 +55,13 @@ public class MomentActivity extends AppCompatActivity {
 
     private List<Moment> moments = new ArrayList<>();
     private Map<Integer, List<Like>> likeListMap = new HashMap<>();//所有pyq的点赞列表
+    private Map<Integer, List<Reply>> replyListMap = new HashMap<>();//所有pyq的回复列表
+
     RecyclerView momentRecyclerView;
     FloatingActionButton fab;
     MomentAdapter momentAdapter;
     SwipeRefreshLayout swipeRefresh;
+    private BottomSheetDialog dialog;//回复对话框
 
     private User user;
 
@@ -77,7 +85,7 @@ public class MomentActivity extends AppCompatActivity {
         momentRecyclerView.setLayoutManager(layoutManager);
 
         System.out.print("========MomentActivity onCreate========= ");
-        momentAdapter = new MomentAdapter(moments, user, likeListMap);
+        momentAdapter = new MomentAdapter(moments, user, likeListMap, replyListMap, MomentActivity.this);
         momentRecyclerView.setAdapter(momentAdapter);
         momentAdapter.setOnItemClickListener(new MomentAdapter.OnItemClickListener(){
             @Override
@@ -92,6 +100,11 @@ public class MomentActivity extends AppCompatActivity {
                 deleteLike(position);
             }
 
+            @Override
+            public void addReply(View view, int position) {
+                System.out.println("======addReply========= " + position+ " ");
+                showReplyDialog(position);
+            }
         });
 
 
@@ -126,6 +139,32 @@ public class MomentActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         refreshMoment();
+    }
+
+    private void showReplyDialog(final int position){
+        dialog = new BottomSheetDialog(this);
+        View replyView = LayoutInflater.from(this).inflate(R.layout.reply_dialog_layout,null);
+        final EditText replyContentView = (EditText) replyView.findViewById(R.id.reply_dialog_content);
+        final Button replyPublishButton = (Button) replyView.findViewById(R.id.btn_reply_dialog_publish);
+        replyContentView.setHint("Replying to " + moments.get(position).getUsername() + "'s moment: ");
+        dialog.setContentView(replyView);
+        replyPublishButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                String replyContent = replyContentView.getText().toString();
+                System.out.print(" ===========showReplyDialog=========== ");
+                System.out.println(" replyContent: "+replyContent);
+                if(!TextUtils.isEmpty(replyContent)) {
+                    addReply(position, replyContent);
+                    dialog.dismiss();
+                    Toast.makeText(MomentActivity.this,"Publish successfully",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(MomentActivity.this,"Please enter your reply~",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        dialog.show();
     }
 
     private void refreshMoment(){
@@ -192,6 +231,8 @@ public class MomentActivity extends AppCompatActivity {
                 System.out.print("===========reply/findAllReplies============");
                 ReplyDTO replyDTO = JsonUtil.json2ReplyDTO(response);
                 System.out.println(replyDTO.getReplyMap().toString());
+                replyListMap.clear();
+                replyListMap.putAll(replyDTO.getReplyMap());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -267,6 +308,9 @@ public class MomentActivity extends AppCompatActivity {
                 Like like = JsonUtil.json2Like(response);
                 //更新adapter中的map
                 List<Like> likeList = likeListMap.get(like.getMomentId());
+                if(likeList == null){
+                    likeList = new ArrayList<>();
+                }
                 likeList.add(like);
                 likeListMap.put(like.getMomentId(), likeList);
 
@@ -321,6 +365,54 @@ public class MomentActivity extends AppCompatActivity {
                         break;
                     }
                 }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        momentAdapter.notifyItemChanged(position);
+                        swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                swipeRefresh.setRefreshing(false);  //表示刷新事件结束，并隐藏刷新进度条
+            }
+        });
+    }
+
+    //点赞
+    private void addReply(final int position, String replyContent){
+        Moment moment = moments.get(position);
+        Reply reply = new Reply();
+        Integer momentID = Integer.valueOf(moment.getMomentId());
+        //Like对象赋值
+        reply.setMomentId(momentID);
+        reply.setCommenterId(Integer.valueOf(user.getUserId()));
+        reply.setCommenterName(user.getUsername());
+        reply.setReplyContent(replyContent);
+        reply.setReplyToId(Integer.valueOf(moment.getUserId()));
+        reply.setReplyToName(moment.getUsername());
+
+        System.out.print(" ===========reply/addReply============ ");
+        String json = JsonUtil.reply2Json(reply);
+
+        System.out.println(json);
+
+        //网络请求
+        sendRequestWithHttpURLConnection("reply/addReply", json, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                //收到reply
+                Reply reply = JsonUtil.json2Reply(response);
+                List<Reply> replyList = replyListMap.get(reply.getMomentId());
+                System.out.println(" reply: "+reply.toString());
+                if(replyList == null){//如果为空
+                    replyList = new ArrayList<>();
+                }
+                replyList.add(reply);
+                replyListMap.put(reply.getMomentId(), replyList);
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

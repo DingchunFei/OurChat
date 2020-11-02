@@ -13,8 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="32dp"
         android:orientation="horizontal"
         android:background="#F6F6F6">
         <TextView
