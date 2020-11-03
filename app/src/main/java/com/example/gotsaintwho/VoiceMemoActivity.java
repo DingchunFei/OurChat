@@ -74,13 +74,13 @@ public class VoiceMemoActivity extends AppCompatActivity {
                 if (isRecording) {
                     //Stop Recording
                     stopRecording();
-                    recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_btn_stopped, null));
+                    recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_stopped, null));
                 } else {
                     if (checkRecordPermissions()) {
                         if(checkWriteExternalStorage()){
                             if(checkReadExternalStorage()){
                                 startRecording();
-                                recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_btn_recording, null));
+                                recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_recording, null));
                             }
                         }
                     }

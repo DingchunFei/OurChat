@@ -67,8 +67,8 @@ public class AudioListFragment extends Fragment implements AudioAdapter.onItemLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        pauseButtonImage = getActivity().getResources().getDrawable(R.drawable.player_pause_btn, null);
-        playButtonImage= getActivity().getResources().getDrawable(R.drawable.player_play_btn, null);
+        pauseButtonImage = getActivity().getResources().getDrawable(R.drawable.pause, null);
+        playButtonImage= getActivity().getResources().getDrawable(R.drawable.play, null);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_audio_list, container, false);
     }

@@ -5,7 +5,7 @@
     android:id="@+id/music_player"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#BD7C7C"
+    android:background="@color/design_default_color_background"
     app:behavior_hideable="true"
     app:behavior_peekHeight="70dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -15,36 +15,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/design_default_color_on_primary"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/player_filename"
-        app:srcCompat="@drawable/player_play_btn" />
+        app:srcCompat="@drawable/play" />
 
-    <ImageButton
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/player_play_btn"
-        app:layout_constraintEnd_toStartOf="@+id/player_play_btn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/player_play_btn"
-        app:srcCompat="@drawable/player_back_btn" />
 
-    <ImageButton
-        android:id="@+id/imageView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/player_play_btn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/player_play_btn"
-        app:layout_constraintTop_toTopOf="@+id/player_play_btn"
-        app:srcCompat="@drawable/player_forward_btn" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -63,7 +42,7 @@
             android:layout_weight="4"
             android:paddingBottom="24dp"
             android:paddingTop="24dp"
-            app:srcCompat="@drawable/player_header_icon" />
+            app:srcCompat="@drawable/voice" />
 
         <TextView
             android:id="@+id/player_header_name"

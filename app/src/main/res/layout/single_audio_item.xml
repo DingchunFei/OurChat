@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/volume"
+        app:srcCompat="@drawable/volume1"
         android:layout_marginLeft="16dp" />
 
     <TextView

@@ -7,22 +7,25 @@
     android:id="@+id/listContainer"
     tools:context=".VoiceMemoActivity">
 
-    <ImageView
+    <TextView
         android:id="@+id/record_header_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/add_moment"
         android:layout_marginTop="64dp"
-        />
+        android:src="@drawable/add_moment"
+        android:text="Voice Memos "
+        android:textColor="@color/design_default_color_on_secondary"
+        android:textSize="36sp"
+        app:fontFamily="sans-serif-black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/record_filename"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Press the mic button \n to start recording"
+        android:text="Press the recording button \n to start recording"
         android:textSize="18sp"
         android:lineHeight="32dp"
         android:textColor="@color/colorAccent"
@@ -53,7 +56,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:src="@drawable/record_btn_stopped"
+        android:src="@drawable/record_stopped"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -65,7 +68,7 @@
         app:layout_constraintStart_toEndOf="@id/record_btn"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="16dp"
-        android:src="@drawable/recorder_list_btn"
+        android:src="@drawable/list_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

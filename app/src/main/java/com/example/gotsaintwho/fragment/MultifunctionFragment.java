@@ -61,8 +61,8 @@ public class MultifunctionFragment extends Fragment {
             }
         }));
 
-        //第二个是朋友圈
-        multifunctionList.add(new Multifunction("Voice Memo", R.drawable.plane, new ViewOnClickListener() {
+        //th
+        multifunctionList.add(new Multifunction("Voice Memos", R.drawable.voice_memos, new ViewOnClickListener() {
             @Override
             public void execute() {
                 Intent intent = new Intent(getActivity(), VoiceMemoActivity.class);
