@@ -19,12 +19,12 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHol
     //create Adapter
     private File[] allAudioFiles;
     private onItemListClick onItemListClick;
+
     public AudioAdapter(File[] allFile,onItemListClick onItemListClick){
         //assign the vale file from adpater
         this.allAudioFiles = allFile;
         this.onItemListClick = onItemListClick;
     }
-
 
     @NonNull
     @Override
@@ -68,15 +68,10 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioViewHol
         @Override
         public void onClick(View v) {
             onItemListClick.onClickListener(allAudioFiles[getAbsoluteAdapterPosition()], getAbsoluteAdapterPosition());
-
         }
-
     }
 
     public interface onItemListClick{
         void onClickListener(File file, int position);
     }
-
-
-
 }

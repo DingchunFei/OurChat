@@ -1,12 +1,16 @@
 package com.example.gotsaintwho;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
@@ -38,9 +42,13 @@ public class VoiceMemoActivity extends AppCompatActivity {
     private String readExternalStorage =Manifest.permission.READ_EXTERNAL_STORAGE;
     private int PERMISSION_CODE = 21;
 
-    private MediaRecorder mediaRecorder;
-    private String recordFile;
+    public MediaRecorder mediaRecorder;
+    private String recordPath;
     private Chronometer timer;
+
+    public VoiceMemoActivity() {
+        mediaRecorder = new MediaRecorder();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,20 +71,17 @@ public class VoiceMemoActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
-                if(isRecording) {
+                if (isRecording) {
                     //Stop Recording
                     stopRecording();
                     recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_btn_stopped, null));
-                    isRecording = false;
                 } else {
-                    if(checkRecordPermissions()){
+                    if (checkRecordPermissions()) {
                         if(checkWriteExternalStorage()){
                             if(checkReadExternalStorage()){
                                 startRecording();
                                 recordBtn.setImageDrawable(getResources().getDrawable(R.drawable.record_btn_recording, null));
-                                isRecording = true;
                             }
-
                         }
                     }
                 }
@@ -84,6 +89,12 @@ public class VoiceMemoActivity extends AppCompatActivity {
         });
 
     }//end onCreate
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopRecording();
+    }
 
     private boolean checkRecordPermissions() {
         if(ActivityCompat.checkSelfPermission(this, recordPermission) == PackageManager.PERMISSION_GRANTED) {
@@ -110,42 +121,40 @@ public class VoiceMemoActivity extends AppCompatActivity {
         }
     }
 
-
-    private void stopRecording() {
-        //stop recording
-        timer.stop();
-        filenameText.setText("Recording Stopped, File Saved : " + recordFile);
-        mediaRecorder.stop();
-        mediaRecorder.release();
-        mediaRecorder = null;
-    }
-
     private void startRecording() {
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
-
-        String recordPath = this.getExternalFilesDir("/").getAbsolutePath();
+//        String recordPath = this.getExternalFilesDir("/").getAbsolutePath();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.CANADA);
         Date now = new Date();
-
-        recordFile = "Recording_" + formatter.format(now) + ".3gp";
-
-        filenameText.setText("Recording, File Name : " + recordFile);
-
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setOutputFile(recordPath + "/" + recordFile);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recordPath = Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/Music/NewRecording_" + formatter.format(now) + ".mp3";
+        filenameText.setText("Recording, File Name : " + recordPath);
 
         try {
-            //record audio
-            mediaRecorder.prepare();
+            isRecording = true;
+            this.mediaRecorder.reset();
+            this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            this.mediaRecorder.setOutputFile(recordPath);
+            this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            this.mediaRecorder.prepare();
+            this.mediaRecorder.start();
+            //emulator can not get audio input from laptop
+            Log.d("media recorder", "record to " + recordPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //start recording
-        mediaRecorder.start();
     }
 
+    private void stopRecording() {
+        //stop recording
+        if (isRecording) {
+            timer.stop();
+            filenameText.setText("Recording Stopped, File Saved : " + recordPath);
+            this.mediaRecorder.stop();
+            isRecording = false;
+            Log.d("media recorder", "stop record ");
+        }
+    }
 }
