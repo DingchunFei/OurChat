@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:name=".MyApplication"
@@ -15,12 +17,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCEHki4ESyHovOCQhezJZqVzi24s305AoI" />
+
         <activity android:name=".AddMomentActivity">
         </activity>
         <activity
             android:name=".MomentActivity"
             android:theme="@style/MomentActivityTheme">
         </activity>
+
+        <activity
+            android:name=".TrackActivity">
+        </activity>
+
         <activity android:name=".FindUserActivity" />
         <activity android:name=".DialogueActivity"
             android:launchMode="singleTask"/>

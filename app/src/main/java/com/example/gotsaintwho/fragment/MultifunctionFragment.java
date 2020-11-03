@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gotsaintwho.DialogueActivity;
 import com.example.gotsaintwho.MomentActivity;
 import com.example.gotsaintwho.R;
+import com.example.gotsaintwho.TrackActivity;
 import com.example.gotsaintwho.adapter.MultifunctionAdapter;
 import com.example.gotsaintwho.callbackListener.ViewOnClickListener;
 import com.example.gotsaintwho.pojo.Multifunction;
@@ -40,6 +41,7 @@ public class MultifunctionFragment extends Fragment {
         initMultifunction();
         RecyclerView recyclerView = view.findViewById(R.id.multifunction_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+
         //加一条横线
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(layoutManager);
@@ -55,6 +57,16 @@ public class MultifunctionFragment extends Fragment {
             @Override
             public void execute() {
                 Intent intent = new Intent(getActivity(), MomentActivity.class);
+                intent.putExtra("user_info", user);
+                startActivity(intent);
+            }
+        }));
+
+        // 第二个是足迹
+        multifunctionList.add(new Multifunction("Track", R.drawable.location, new ViewOnClickListener() {
+            @Override
+            public void execute() {
+                Intent intent = new Intent(getActivity(), TrackActivity.class);
                 intent.putExtra("user_info", user);
                 startActivity(intent);
             }
