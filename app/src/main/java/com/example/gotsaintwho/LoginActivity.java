@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 account = accountEdit.getText().toString();
                 password = passwordEdit.getText().toString(); // 如果账号是admin且密码是123456，就认为登录成功
                 //这里是登录
@@ -78,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                 sendRequestWithHttpURLConnection("user/login", jsonStr, new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
+
                         userAfterLogin = JsonUtil.json2User(response);
                         //登录成功
                         if (userAfterLogin != null && userAfterLogin.getUserId() != null) {

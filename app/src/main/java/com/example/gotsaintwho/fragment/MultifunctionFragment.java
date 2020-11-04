@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gotsaintwho.DialogueActivity;
+import com.example.gotsaintwho.GoogleMapActivity;
 import com.example.gotsaintwho.MomentActivity;
 import com.example.gotsaintwho.R;
-import com.example.gotsaintwho.VoiceMemoActivity;
 import com.example.gotsaintwho.adapter.MultifunctionAdapter;
 import com.example.gotsaintwho.callbackListener.ViewOnClickListener;
 import com.example.gotsaintwho.pojo.Multifunction;
@@ -61,11 +61,11 @@ public class MultifunctionFragment extends Fragment {
             }
         }));
 
-        //th
-        multifunctionList.add(new Multifunction("Voice Memos", R.drawable.voice_memos, new ViewOnClickListener() {
+        //加地图
+        multifunctionList.add(new Multifunction("Search", R.drawable.ic_search, new ViewOnClickListener() {
             @Override
             public void execute() {
-                Intent intent = new Intent(getActivity(), VoiceMemoActivity.class);
+                Intent intent = new Intent(getActivity(), GoogleMapActivity.class);
                 intent.putExtra("user_info", user);
                 startActivity(intent);
             }
