@@ -57,12 +57,17 @@ public class MultifunctionFragment extends Fragment {
             }
         }));
 
+        
         // 第二个是足迹
         multifunctionList.add(new Multifunction("Track", R.drawable.location, new ViewOnClickListener() {
             @Override
             public void execute() {
                 Intent intent = new Intent(getActivity(), TrackActivity.class);
-        //th
+                startActivity(intent);
+
+            }
+        }));
+        
         multifunctionList.add(new Multifunction("Voice Memos", R.drawable.voice_memos, new ViewOnClickListener() {
             @Override
             public void execute() {
