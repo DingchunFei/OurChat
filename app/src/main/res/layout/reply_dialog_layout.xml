@@ -1,0 +1,37 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/reply_dialog_content"
+        android:layout_width="match_parent"
+        android:layout_height="105dp"
+        android:layout_margin="12dp"
+        android:background="@drawable/comment_dialog_et_selector"
+        android:gravity="left|top"
+        android:hint="Please enter your reply..."
+        android:paddingLeft="15dp"
+        android:paddingTop="12dp"
+        android:textColor="#808080"
+        android:textColorHint="#929292"
+        android:textSize="14sp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_reply_dialog_publish"
+            android:layout_width="72dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="14dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="6dp"
+            android:background="#D8D8D8"
+            android:text="publish"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+</LinearLayout>

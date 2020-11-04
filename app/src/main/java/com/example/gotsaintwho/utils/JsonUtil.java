@@ -6,7 +6,12 @@ import android.util.Log;
 
 import com.example.gotsaintwho.pojo.AllUserIdDTO;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
+import com.example.gotsaintwho.pojo.Like;
+import com.example.gotsaintwho.pojo.LikeDTO;
 import com.example.gotsaintwho.pojo.Moment;
+import com.example.gotsaintwho.pojo.MomentIds;
+import com.example.gotsaintwho.pojo.Reply;
+import com.example.gotsaintwho.pojo.ReplyDTO;
 import com.example.gotsaintwho.pojo.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -18,7 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsonUtil {
     private static final String TAG = "JsonUtil";
@@ -73,6 +80,47 @@ public class JsonUtil {
     public static String userId2JsonStr(AllUserIdDTO allUserId){
         String jsonStr = gson.toJson(allUserId, AllUserIdDTO.class);
         return jsonStr;
+    }
+
+    public static ReplyDTO json2ReplyDTO(String json){
+        Gson gson = new Gson();
+        ReplyDTO replyDTO =  gson.fromJson(json, ReplyDTO.class);
+        return replyDTO;
+    }
+
+    public static String momentIds2Json(MomentIds momentIds){
+        Gson gson = new Gson();
+        return gson.toJson(momentIds);
+    }
+
+    public static LikeDTO json2LikeDTO(String json){
+        Gson gson = new Gson();
+        LikeDTO likeDTO = gson.fromJson(json, LikeDTO.class);
+        return likeDTO;
+    }
+
+    public static Like json2Like(String json){
+        Gson gson = new Gson();
+        Like like = gson.fromJson(json, Like.class);
+        return like;
+    }
+
+    public static String like2Json(Like like){
+        Gson gson = new Gson();
+        String json = gson.toJson(like);
+        return json;
+    }
+
+    public static String reply2Json(Reply reply){
+        Gson gson = new Gson();
+        String json = gson.toJson(reply);
+        return json;
+    }
+
+    public static Reply json2Reply(String json){
+        Gson gson = new Gson();
+        Reply reply = gson.fromJson(json, Reply.class);
+        return reply;
     }
 
 /*    public static String json2MomentImgId(String jsonStr){
