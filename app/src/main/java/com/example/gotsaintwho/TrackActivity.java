@@ -27,6 +27,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
@@ -129,15 +130,15 @@ public class TrackActivity extends AppCompatActivity
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isPause){
+                if (isPause) {
                     startTime = System.currentTimeMillis();
                     start.setText("PAUSE");
                     isPause = false;
                     onResume();
-                }else {
+                } else {
                     isPause = true;
                     onPause();
-                    mTotalTimes = System.currentTimeMillis()- startTime;
+                    mTotalTimes = System.currentTimeMillis() - startTime;
                     start.setText("START");
                 }
 
@@ -185,15 +186,15 @@ public class TrackActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-      //      map.setMyLocationEnabled(true);
-       //     map.getUiSettings().setMyLocationButtonEnabled(true);
+        //    map.setMyLocationEnabled(true);
+            map.getUiSettings().setMyLocationButtonEnabled(true);
             getCurrentLocation();
         }
     }
 
     private void getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-        Task<Location> task = client.getLastLocation();
+            Task<Location> task = client.getLastLocation();
             task.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(final Location location) {
@@ -206,11 +207,11 @@ public class TrackActivity extends AppCompatActivity
                             public void onMapReady(GoogleMap googleMap) {
                                 map = googleMap;
                                 // Initialize lat lng
-
+                                Log.d("getCurrentLocation", points.size() + "");
                                 mLastLocation = location;
-                            //    if(!isPause){
+                                //    if(!isPause){
 
-                           //     }
+                                //     }
                                 placeMarkerOnMap(location);
 
                             }
@@ -233,22 +234,23 @@ public class TrackActivity extends AppCompatActivity
             if (locationList.size() > 0) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                location.getBearing();
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                getCurrentLocation();
-         //       if(mLastLocation.latitude != location.getLatitude() && points.get(points.size() -1).longitude != location.getLongitude()){
-           //         mLastLocation = location;
-                //    if(map != null){ //prevent crashing if the map doesn't exist yet (eg. on starting activity)
-                    //    map.clear();
 
-               //         placeMarkerOnMap(latLng);
-               //         if(!isPause) {
-                          //  points.add(latLng);
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+           //     getCurrentLocation();
+                //       if(mLastLocation.latitude != location.getLatitude() && points.get(points.size() -1).longitude != location.getLongitude()){
+                //         mLastLocation = location;
+                //    if(map != null){ //prevent crashing if the map doesn't exist yet (eg. on starting activity)
+                //    map.clear();
+
+                         placeMarkerOnMap(location);
+                Log.e("mLocationCallback", points.size() + "");
+                //         if(!isPause) {
+                //  points.add(latLng);
 
                 //        }
-               //     }
+                //     }
 
-             //   }
+                //   }
 
             }
         }
@@ -262,28 +264,33 @@ public class TrackActivity extends AppCompatActivity
             mCurrentMarKer = null;
         }
         if (mCurrentMarKer == null) {
-            mCurrentMarKer = map.addMarker(new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)).anchor(0.5f,0.5f));
 
-        //    mCurrentMarKer.setRotation(-lastRotateDegree);
-            String locationDetail = getStreet(TrackActivity.this, latLng.latitude,latLng.longitude);//location.getLatitude(), location.getLongitude())
+            String locationDetail = getStreet(TrackActivity.this, latLng.latitude, latLng.longitude);//location.getLatitude(), location.getLongitude())
             myLocationText.setText("Location: " + locationDetail);
 
-            if(!isPause) {
-                if( points.size() == 0 || points.size() > 0 && (latLng.latitude != points.get(points.size() -1).latitude || latLng.longitude != points.get(points.size() -1).longitude)){
+            if (!isPause) {
+                if (points.size() == 0 || points.size() > 0 && (latLng.latitude != points.get(points.size() - 1).latitude || latLng.longitude != points.get(points.size() - 1).longitude)) {
+                    if(points.size() > 0)
+                     mTotalDistance += (float) getDistance(points.get(points.size() -1),latLng);
 
                     points.add(latLng);
                     map.clear();
 
                     mutablePolyline = map.addPolyline(new PolylineOptions()
                             .color(Color.BLUE)
-                            .width(20)
+                            .width(30)
                             .geodesic(true)
                             .addAll(points));
+
                 }
             }
+            mCurrentMarKer = map.addMarker(new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)).anchor(0.5f, 0.5f));
+
             mCurrentMarKer.setPosition(latLng);
-            Log.d("points",points.size()+"");
-            updateCameraBearing(map, -lastRotateDegree,latLng);
+
+      //      Toast.makeText(getApplicationContext(), "lastRotateDegree: "+lastRotateDegree , Toast.LENGTH_LONG).show();
+
+            updateCameraBearing(map, -lastRotateDegree, location);
 
         }
     }
@@ -322,7 +329,7 @@ public class TrackActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
 
-        if( sensorManager == null){
+        if (sensorManager == null) {
             sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         }
 
@@ -347,16 +354,17 @@ public class TrackActivity extends AppCompatActivity
 
     protected LocationRequest createLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10); //间隔10s
-        locationRequest.setFastestInterval(10); //可以处理的最快间隔
+        locationRequest.setInterval(5000); //间隔10s
+        locationRequest.setFastestInterval(2000); //可以处理的最快间隔
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
 
 
+    private void updateCameraBearing(GoogleMap googleMap, float bearing, Location position) {
+        if (googleMap == null) return;
+        LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 
-    private void updateCameraBearing(GoogleMap googleMap, float bearing, LatLng latLng) {
-        if ( googleMap == null) return;
         CameraPosition camPos = CameraPosition
                 .builder(
                         googleMap.getCameraPosition() // current Camera
@@ -365,7 +373,7 @@ public class TrackActivity extends AppCompatActivity
                 .zoom(17)
                 .bearing(bearing)
                 .build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camPos),null);
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camPos), null);
     }
 
 
@@ -403,10 +411,10 @@ public class TrackActivity extends AppCompatActivity
                 step.setText("Total Step: " + sensorEvent.values[0]);
                 break;
             case Sensor.TYPE_ACCELEROMETER:
-                    valuesAccelerometer = sensorEvent.values.clone();
+                valuesAccelerometer = sensorEvent.values.clone();
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
-                    valuesMagneticField =  sensorEvent.values.clone();
+                valuesMagneticField = sensorEvent.values.clone();
                 break;
         }
 
@@ -428,7 +436,7 @@ public class TrackActivity extends AppCompatActivity
             }
 
 
-            if(!isPause){
+            if (!isPause) {
                 totalMilliSeconds =
                         System.currentTimeMillis() + mTotalTimes - startTime;
             }
@@ -444,11 +452,35 @@ public class TrackActivity extends AppCompatActivity
             long currentHour = totalHour % 24;
 
             distance.setText("Distance: " + mTotalDistance + "\nTimer: " + currentHour + ":" + currentMinute + ":" + currentSecond);
-            lastRotateDegree = rotateDegree;
+           // if(lastRotateDegree - rotateDegree  > 10){
+                lastRotateDegree = rotateDegree;
+
+         //   }
 
 
         }
 
+    }
+
+    public double getDistance(LatLng start,LatLng end){
+        double lat1 = (Math.PI/180)*start.latitude;
+        double lat2 = (Math.PI/180)*end.latitude;
+
+        double lon1 = (Math.PI/180)*start.longitude;
+        double lon2 = (Math.PI/180)*end.longitude;
+
+//      double Lat1r = (Math.PI/180)*(gp1.getLatitudeE6()/1E6);
+//      double Lat2r = (Math.PI/180)*(gp2.getLatitudeE6()/1E6);
+//      double Lon1r = (Math.PI/180)*(gp1.getLongitudeE6()/1E6);
+//      double Lon2r = (Math.PI/180)*(gp2.getLongitudeE6()/1E6);
+
+        //地球半径
+        double R = 6371;
+
+        //两点间距离 km，如果想要米的话，结果*1000就可以了
+        double d =  Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*R;
+
+        return d*1000;
     }
 
     @Override
