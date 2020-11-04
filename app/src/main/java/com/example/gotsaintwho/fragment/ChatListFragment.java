@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.gotsaintwho.BaseActivity;
 import com.example.gotsaintwho.DialogueActivity;
+import com.example.gotsaintwho.GroupDialogueActivity;
 import com.example.gotsaintwho.R;
 import com.example.gotsaintwho.adapter.ChatItemAdapter;
 import com.example.gotsaintwho.pojo.ChatItem;
@@ -117,14 +118,25 @@ public class ChatListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ChatItem chatItem = chatItemsList.get(i);
-                //登录成功后的页面跳转
-                Intent intent = new Intent(getActivity(), DialogueActivity.class);
-                User targetUser = new User();
-                targetUser.setUserId(chatItem.getTargetUserId());
-                targetUser.setUsername(chatItem.getTargetUsername());
-                intent.putExtra("user_info", user);
-                intent.putExtra("target_user_info",targetUser);
-                startActivity(intent);
+                if (chatItem.isGroupChat()) {
+                    //登录成功后的页面跳转
+                    Intent intent = new Intent(getActivity(), GroupDialogueActivity.class);
+
+                    Group targetGroup = chatItem.getTargetGroup();
+                    intent.putExtra("user_info", user);
+                    intent.putExtra("target_group_info", targetGroup);
+                    startActivity(intent);
+                }
+                else {
+                    //登录成功后的页面跳转
+                    Intent intent = new Intent(getActivity(), DialogueActivity.class);
+                    User targetUser = new User();
+                    targetUser.setUserId(chatItem.getTargetUserId());
+                    targetUser.setUsername(chatItem.getTargetUsername());
+                    intent.putExtra("user_info", user);
+                    intent.putExtra("target_user_info",targetUser);
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -160,7 +172,18 @@ public class ChatListFragment extends Fragment {
             Log.d("chat list fragment", group.toString());
         }
 
+        for(Group group: groupList){
+            //查询最后一条聊天记录
+            // MsgDBPojo lastMsgDBPojo = DBUtil.findLastMsgDBPojoByTargetUserId(user.getUserId());
 
+            String lastChat = "yoo";
+//            if(lastMsgDBPojo!=null){
+//                lastChat = lastMsgDBPojo.getContent();
+//            }
+
+            ChatItem chatItem =  new ChatItem(group, lastChat);
+            chatItemsList.add(chatItem);
+        }
     }
 
     //设置菜单内容和事件

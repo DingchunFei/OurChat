@@ -1,6 +1,7 @@
 package com.example.gotsaintwho.dialogue;
 
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
+import com.example.gotsaintwho.pojo.GroupDialogueMsgDTO;
 import com.example.gotsaintwho.utils.JsonUtil;
 
 import java.util.LinkedList;
@@ -14,6 +15,12 @@ public class DialogueQueue {
     public static void sendDialogue(DialogueMsgDTO dialogueMsgDTO){
         System.out.println("消息放入发送队列");
         String str = JsonUtil.dialogueMsg2Json(dialogueMsgDTO);
+        senderQueue.add(str);
+    }
+
+    public static void sendGroupDialogue(GroupDialogueMsgDTO groupDialogueMsgDTO){
+        System.out.println("群消息放入发送队列");
+        String str = JsonUtil.dialogueMsg2Json(groupDialogueMsgDTO);
         senderQueue.add(str);
     }
 

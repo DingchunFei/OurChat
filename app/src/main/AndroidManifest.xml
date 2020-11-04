@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AddGroupActivity"></activity>
+        <activity android:name=".GroupDialogueActivity"></activity>
+        <activity android:name=".AddGroupActivity" />
         <activity android:name=".GroupChatActivity" />
         <activity android:name=".AddMomentActivity" />
         <activity

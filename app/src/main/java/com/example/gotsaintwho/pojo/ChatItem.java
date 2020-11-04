@@ -9,6 +9,24 @@ public class ChatItem {
     private String targetUserId;
     private String lastChat;
     private int imageId;
+    private Group targetGroup;
+    private boolean isGroupChat = false;
+
+    public Group getTargetGroup() {
+        return targetGroup;
+    }
+
+    public void setTargetGroup(Group targetGroup) {
+        this.targetGroup = targetGroup;
+    }
+
+    public boolean isGroupChat() {
+        return isGroupChat;
+    }
+
+    public void setGroupChat(boolean groupChat) {
+        isGroupChat = groupChat;
+    }
 
     public ChatItem(String targetUsername, String targetUserId, String lastChat, int imageId) {
         this.targetUsername = targetUsername;
@@ -27,6 +45,12 @@ public class ChatItem {
         this.targetUsername = targetUsername;
         this.targetUserId = targetUserId;
         this.lastChat = lastChat;
+    }
+
+    public ChatItem(Group targetGroup, String lastChat) {
+        this.targetGroup = targetGroup;
+        this.lastChat = lastChat;
+        this.isGroupChat = true;
     }
 
     public String getTargetUserName() {
