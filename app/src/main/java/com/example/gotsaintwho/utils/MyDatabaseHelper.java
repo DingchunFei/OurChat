@@ -14,7 +14,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     public MyDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version); mContext = context;
-        context.deleteDatabase("OurChat.db"); // reset database
+//        context.deleteDatabase("OurChat.db"); // reset database
     }
     @Override
     public void onCreate(SQLiteDatabase db) {

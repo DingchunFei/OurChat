@@ -115,9 +115,11 @@ public class ReceiverThread extends Thread {
         BufferedReader br = null;
         try {
             //read the data from socket
+            // 怎么做到只给目标用户发消息？
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String str = null;
             while ((str = br.readLine()) != null) {
+                Log.d("receiver thread", str);
                 dialogueMsgDTO = JsonUtil.json2dialogueMsg(str);
                 System.out.println(dialogueMsgDTO);
                 //将发来的数据放到数据区
