@@ -1,30 +1,25 @@
 package com.example.gotsaintwho.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.gotsaintwho.DialogueActivity;
 import com.example.gotsaintwho.MomentActivity;
-import com.example.gotsaintwho.R;
 import com.example.gotsaintwho.TrackActivity;
+import com.example.gotsaintwho.VoiceMemoActivity;
 import com.example.gotsaintwho.adapter.MultifunctionAdapter;
 import com.example.gotsaintwho.callbackListener.ViewOnClickListener;
 import com.example.gotsaintwho.pojo.Multifunction;
 import com.example.gotsaintwho.pojo.User;
-
 import java.util.ArrayList;
 import java.util.List;
+
+
+
 
 public class MultifunctionFragment extends Fragment {
 
@@ -67,6 +62,11 @@ public class MultifunctionFragment extends Fragment {
             @Override
             public void execute() {
                 Intent intent = new Intent(getActivity(), TrackActivity.class);
+        //th
+        multifunctionList.add(new Multifunction("Voice Memos", R.drawable.voice_memos, new ViewOnClickListener() {
+            @Override
+            public void execute() {
+                Intent intent = new Intent(getActivity(), VoiceMemoActivity.class);
                 intent.putExtra("user_info", user);
                 startActivity(intent);
             }

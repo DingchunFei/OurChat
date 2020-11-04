@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <LinearLayout
+        android:id="@+id/recorder_dialog_bg"
+        android:layout_width="180dp"
+        android:layout_height="140dp"
+        android:background="@drawable/audio_recording_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/recorder_dialog_lLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal">
+
+                <Chronometer
+                    android:id="@+id/recorder_dialog_time_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/recorder_dialog_lLayout"
+                    android:layout_toRightOf="@id/recorder_dialog_lLayout"
+                    android:text="60''"
+                    android:textColor="#0B0B0B"
+                    android:textSize="25sp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/recorder_dialog_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="Release finger , send messages"
+            android:textColor="#131313"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
