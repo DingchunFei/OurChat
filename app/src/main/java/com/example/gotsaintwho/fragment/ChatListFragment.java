@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ import com.example.gotsaintwho.DialogueActivity;
 import com.example.gotsaintwho.R;
 import com.example.gotsaintwho.adapter.ChatItemAdapter;
 import com.example.gotsaintwho.pojo.ChatItem;
+import com.example.gotsaintwho.pojo.Group;
 import com.example.gotsaintwho.pojo.Msg;
 import com.example.gotsaintwho.pojo.MsgDBPojo;
 import com.example.gotsaintwho.pojo.User;
@@ -95,6 +97,9 @@ public class ChatListFragment extends Fragment {
     private void initView(){
         //从数据库中读取所有好友
         initChatItem(user.getUserId());
+        // read every group from database
+        initChatItemGroup(user);
+
         adapter = new ChatItemAdapter(getActivity(), R.layout.item_chat_list, chatItemsList);
         listView.setAdapter(adapter);
 
@@ -145,6 +150,17 @@ public class ChatListFragment extends Fragment {
                 chatItemsList.add(chatItem);
             }
         }
+    }
+
+    private void initChatItemGroup(User user){
+        List<Group> groupList = DBUtil.findAllGroups(user);
+
+        // test
+        for (Group group: groupList) {
+            Log.d("chat list fragment", group.toString());
+        }
+
+
     }
 
     //设置菜单内容和事件

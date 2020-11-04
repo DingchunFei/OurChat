@@ -4,7 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -70,6 +74,7 @@ public class AddGroupActivity extends AppCompatActivity {
                 //封装一个要查找的user对象发送给服务器
                 User user = new User();
                 user.setUsername(username);
+                final List<String> allFriendIds= DBUtil.findAllUserId();
 
                 //向服务器寻找匹配的用户
                 HttpUtil.sendRequestWithHttpURLConnection("user/findUserByUsername", JsonUtil.user2Json(user), new HttpCallbackListener() {
@@ -79,7 +84,10 @@ public class AddGroupActivity extends AppCompatActivity {
                         //数据改变后，刷新页面
                         userList.clear();
                         for (User user : users) {
-                            if (user.getUserId().equals(currentUser.getUserId())) continue;
+                            // only show friends
+                            if (user.getUserId().equals(currentUser.getUserId()) || !allFriendIds.contains(user.getUserId())) {
+                                continue;
+                            }
                             //防止把当前用户放到待加好友中！
                             userList.add(user);
                         }
@@ -111,6 +119,7 @@ public class AddGroupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // Log.d("create group", "clicked");
                 // must add at least one user
+                // don't create group
                 if (CURRENT_USERS_IN_GROUP.size() < 1) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -118,11 +127,42 @@ public class AddGroupActivity extends AppCompatActivity {
                             Toast.makeText(AddGroupActivity.this, "Please add at least 1 user", Toast.LENGTH_SHORT).show();
                         }
                     });
-                }
-                else {
-                    DBUtil.addUsersInGroup(AddGroupActivity.nextGroup, CURRENT_USERS_IN_GROUP);
-                }
+                } else {
+                    // create group
+                    // ask for group name
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AddGroupActivity.this);
+                    final String[] groupName = new String[1];
+                    builder.setTitle("Enter group name");
 
+                    // Set up the input
+                    final EditText input = new EditText(MyApplication.getContext());
+                    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    // Set up the buttons
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            groupName[0] = input.getText().toString();
+                            // save group in database
+                            DBUtil.addUsersInGroup(AddGroupActivity.nextGroup, groupName[0], currentUser, CURRENT_USERS_IN_GROUP);
+
+                            Toast.makeText(AddGroupActivity.this, "Group " + groupName[0] + " created", Toast.LENGTH_SHORT).show();
+                            // go back to main activity
+                            finish();
+                        }
+                    });
+
+                    /*builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });*/
+
+                    builder.show();
+                }
 
             }
         });

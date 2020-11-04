@@ -7,10 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.gotsaintwho.MyApplication;
+import com.example.gotsaintwho.pojo.Group;
 import com.example.gotsaintwho.pojo.MsgDBPojo;
 import com.example.gotsaintwho.pojo.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,6 +85,43 @@ public class DBUtil {
         return userList;
     }
 
+    // find all groups for the current user
+    public static List<Group> findAllGroups(User currentUser) {
+        List<Group> groupList = new ArrayList<>();
+        String currentUserId = currentUser.getUserId();
+
+        Cursor cursor = db.query("group_chat", null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String userIds = cursor.getString(cursor.getColumnIndex("user_ids"));
+                String[] usersInGroup = userIds.split(",");
+
+                // only add groups that the current user is in
+                if ( Arrays.asList(usersInGroup).contains(currentUserId) ) {
+                    String groupId = cursor.getString(cursor.getColumnIndex("group_id"));
+                    String groupName = cursor.getString(cursor.getColumnIndex("group_name"));
+                    User user;
+                    List<User> tmp = new ArrayList<>();
+
+                    tmp.add(currentUser);
+
+                    for (String userId : usersInGroup) {
+                        // don't add current user twice
+                        if (!userId.equals(currentUserId)) {
+                            user = findUserById(userId);
+                            tmp.add(user);
+                        }
+                    }
+
+                    groupList.add(new Group(groupId, usersInGroup[0], groupName, tmp));
+//                    Log.d("users in group", String.valueOf(usersInGroup));
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return groupList;
+    }
+
     public static void saveUser(User user) {
         ContentValues values = new ContentValues(); // 开始组装第一条数据 values.put("name", "The Da Vinci Code"); values.put("author", "Dan Brown"); values.put("pages", 454);
         values.put("user_id", user.getUserId());
@@ -92,21 +131,22 @@ public class DBUtil {
     }
 
     // add users in a group
-    public static void addUsersInGroup(int group_id, List<User> users) {
-        String dataString = "";
+    public static void addUsersInGroup(int group_id, String groupName, User owner, List<User> users) {
+        String dataString = owner.getUserId();
         for (User user : users) {
             dataString += "," + user.getUserId();
         }
 
         ContentValues values = new ContentValues(); // 开始组装第一条数据 values.put("name", "The Da Vinci Code"); values.put("author", "Dan Brown"); values.put("pages", 454);
         values.put("group_id", group_id);
+        values.put("group_name", groupName);
+        values.put("owner_id", owner.getUserId());
         values.put("user_ids", dataString);
 
         db.insert("group_chat", null, values);
 
         users.clear();  // remove all users in the current group
-        Log.d("group id", String.valueOf(group_id));
-        Log.d("add users in group", dataString);
+        Log.d("database group", String.valueOf(group_id) + groupName + owner.getUserId() + dataString);
     }
 
     public static int getMaxGroupId() {
