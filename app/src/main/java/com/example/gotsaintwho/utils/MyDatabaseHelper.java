@@ -7,6 +7,7 @@ import android.util.Log;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String CREATE_MSGDBPOJO = "create table msgdbpojo ( id integer primary key autoincrement, content text, type integer, targetUserId text)";
+    public static final String CREATE_GROUP_MSGDBPOJO = "create table group_msg_db_pojo ( id integer primary key autoincrement, content text, type integer, targetGroupId text, sent_user text)";
     public static final String CREATE_USER = "create table user ( user_id text primary key, username text, gender text)";
     public static final String CREATE_GROUP = "create table group_chat ( group_id integer primary key, group_name text, owner_id integer, user_ids text)";
 
@@ -14,12 +15,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     public MyDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version); mContext = context;
-//        context.deleteDatabase("OurChat.db"); // reset database
+        context.deleteDatabase("OurChat.db"); // reset database
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d("on create database", "in database helper!!!!!!!!!!");
         db.execSQL(CREATE_MSGDBPOJO);
+        db.execSQL(CREATE_GROUP_MSGDBPOJO);
         db.execSQL(CREATE_USER);
         db.execSQL(CREATE_GROUP);
     }
@@ -28,6 +30,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("drop table if exists msgdbpojo");
         db.execSQL("drop table if exists user");
         db.execSQL("drop table if exists group_chat");
+        db.execSQL("drop table if exists group_msg_db_pojo");
 
         onCreate(db);
     }

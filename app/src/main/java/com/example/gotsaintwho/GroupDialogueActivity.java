@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -17,12 +18,14 @@ import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.example.gotsaintwho.adapter.GroupMsgAdapter;
 import com.example.gotsaintwho.adapter.MsgAdapter;
 import com.example.gotsaintwho.audio.AudioDialogManage;
 import com.example.gotsaintwho.dialogue.DialogueQueue;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
 import com.example.gotsaintwho.pojo.Group;
 import com.example.gotsaintwho.pojo.GroupDialogueMsgDTO;
+import com.example.gotsaintwho.pojo.GroupMsgDBPojo;
 import com.example.gotsaintwho.pojo.Msg;
 import com.example.gotsaintwho.pojo.MsgDBPojo;
 import com.example.gotsaintwho.pojo.User;
@@ -38,7 +41,7 @@ public class GroupDialogueActivity extends BaseActivity {
     private EditText inputText;
     private Button send;
     private RecyclerView msgRecyclerView;
-    private MsgAdapter adapter;
+    private GroupMsgAdapter adapter;
     private User user = null;
     private Group targetGroup = null;
     private MsgReceiver msgReceiver;
@@ -116,7 +119,7 @@ public class GroupDialogueActivity extends BaseActivity {
         user = (User) intent.getSerializableExtra("user_info");
         targetGroup = (Group) intent.getSerializableExtra("target_group_info");
 
-        // set toobar's group name
+        // set toolbar's group name
         getSupportActionBar().setTitle(targetGroup.getGroupName());
 
         inputText = findViewById(R.id.input_text);
@@ -135,15 +138,15 @@ public class GroupDialogueActivity extends BaseActivity {
         msgs = groupMsgListMap.get(currentTargetGroupId);
         if(msgs == null){   //说明这个用户是第一次聊天
             msgs = new LinkedList<>();
-            /*//看看数据库里有没有之前的聊天记录    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            List<MsgDBPojo> allMsgDBPojo = DBUtil.findAllMsgDBPojoByTargetUserId(currentTargetGroupId);
+            //看看数据库里有没有之前的聊天记录    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            /*List<MsgDBPojo> allMsgDBPojo = DBUtil.findAllMsgDBPojoByTargetUserId(currentTargetGroupId);
             for (MsgDBPojo msgDBPojo:allMsgDBPojo){
                 msgs.add(new Msg(msgDBPojo.getContent(),msgDBPojo.getType()));
-            }
-            msgListMap.put(targetUser.getUserId(),msgs);*/
+            }*/
+            groupMsgListMap.put(currentTargetGroupId, msgs);
         }
 
-        adapter = new MsgAdapter(msgs);
+        adapter = new GroupMsgAdapter(msgs);
         msgRecyclerView.setAdapter(adapter);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,10 +160,10 @@ public class GroupDialogueActivity extends BaseActivity {
                     inputText.setText(""); // 清空输入框中的内容
 
                     //向数据库存入新数据
-                    DBUtil.saveMsgDBPojo(new MsgDBPojo(msg.getContent(), Msg.TYPE_SENT, currentTargetGroupId));
+                    DBUtil.saveGroupMsgDBPojo(new GroupMsgDBPojo(msg.getContent(), Msg.TYPE_SENT, currentTargetGroupId, user.getUserId()));
 
                     //向服务器发送数据
-                    sendMsg2Server(user, msg, targetGroup.getGroupId());
+                    sendMsg2Server(user, msg, targetGroup);
                 }
             }
         });
@@ -292,10 +295,23 @@ public class GroupDialogueActivity extends BaseActivity {
 
 
 
-    private void sendMsg2Server(final User user, final Msg msg, final String targetGroupId){
-        GroupDialogueMsgDTO groupDialogueMsgDTO = new GroupDialogueMsgDTO(user.getUserId(), targetGroupId, msg.getContent());
-        //将用户发出的消息发送到服务器！
-        DialogueQueue.sendGroupDialogue(groupDialogueMsgDTO);
+    private void sendMsg2Server(final User user, final Msg msg, final Group targetGroup){
+        List<User> usersInGroup = targetGroup.getUsersInGroup();
+        String groupMemberIds = "";
+
+        for (User u: usersInGroup) {
+            groupMemberIds += "," + u.getUserId();
+        }
+        /*send each user in group a separate message*/
+        for (User u: usersInGroup) {
+            // don't send message to myself
+            if (!u.getUserId().equals(user.getUserId())) {
+                GroupDialogueMsgDTO groupDialogueMsgDTO = new GroupDialogueMsgDTO(user.getUserId(), u.getUserId(),
+                        targetGroup.getGroupId(), targetGroup.getGroupName(), groupMemberIds, msg.getContent());
+                //将用户发出的消息发送到服务器！
+                DialogueQueue.sendGroupDialogue(groupDialogueMsgDTO);
+            }
+        }
     }
 
 }

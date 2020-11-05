@@ -1,5 +1,7 @@
 package com.example.gotsaintwho.dialogue;
 
+import android.util.Log;
+
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
 import com.example.gotsaintwho.pojo.GroupDialogueMsgDTO;
 import com.example.gotsaintwho.utils.JsonUtil;
@@ -11,6 +13,8 @@ public class DialogueQueue {
 
     private static List<String> senderQueue = new LinkedList<>();
     private static List<DialogueMsgDTO> receiverQueue = new LinkedList<>();
+    private static final String IS_GROUP = "1";
+    private static final String NOT_GROUP = "0";
 
     public static void sendDialogue(DialogueMsgDTO dialogueMsgDTO){
         System.out.println("消息放入发送队列");

@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.gotsaintwho.MyApplication;
 import com.example.gotsaintwho.pojo.Group;
+import com.example.gotsaintwho.pojo.GroupMsgDBPojo;
 import com.example.gotsaintwho.pojo.MsgDBPojo;
 import com.example.gotsaintwho.pojo.User;
 
@@ -51,6 +52,21 @@ public class DBUtil {
         }
         cursor.close();
         return user;
+    }
+
+    public static Group findGroupbyId(String groupId) {
+        Group group = null;
+        Cursor cursor = db.query("group_chat", null, "group_id=?", new String[]{groupId}, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String ownerId = cursor.getString(cursor.getColumnIndex("owner_id"));
+                String groupName = cursor.getString(cursor.getColumnIndex("group_name"));
+
+                group = new Group(groupId, ownerId, groupName, null);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return group;
     }
 
     public static List<String> findAllUserId() {
@@ -205,11 +221,21 @@ public class DBUtil {
         return msgDBPojoList;
     }
 
+
     public static void saveMsgDBPojo(MsgDBPojo msgDBPojo) {
         ContentValues values = new ContentValues(); // 开始组装第一条数据 values.put("name", "The Da Vinci Code"); values.put("author", "Dan Brown"); values.put("pages", 454);
         values.put("content", msgDBPojo.getContent());
         values.put("type", msgDBPojo.getType());
         values.put("targetUserId", msgDBPojo.getTargetUserId());
         db.insert("msgdbpojo", null, values); // 插入数据
+    }
+
+    public static void saveGroupMsgDBPojo(GroupMsgDBPojo groupMsgDBPojo) {
+        ContentValues values = new ContentValues(); // 开始组装第一条数据 values.put("name", "The Da Vinci Code"); values.put("author", "Dan Brown"); values.put("pages", 454);
+        values.put("content", groupMsgDBPojo.getContent());
+        values.put("type", groupMsgDBPojo.getType());
+        values.put("targetGroupId", groupMsgDBPojo.gettargetGroupId());
+        values.put("sent_user", groupMsgDBPojo.getSentUser());
+        db.insert("group_msg_db_pojo", null, values); // 插入数据
     }
 }

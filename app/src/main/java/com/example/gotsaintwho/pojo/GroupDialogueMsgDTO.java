@@ -5,13 +5,14 @@ import java.io.Serializable;
 public class GroupDialogueMsgDTO implements Serializable {
 
     private String userId;
-    private String targetGroupId;
+    private String targetUserId;
     private String message;
 
-    public GroupDialogueMsgDTO(String userId, String targetGroupId, String message) {
+    public GroupDialogueMsgDTO(String userId, String targetUserId, String groupId, String groupName, String groupMemberIds, String message) {
         this.userId = userId;
-        this.targetGroupId = targetGroupId;
-        this.message = message;
+        this.targetUserId = targetUserId;
+
+        this.message = "group:" + groupId + "," + groupName + "/" + "members:" +  groupMemberIds + "/" + message;
     }
 
     public String getUserId() {
@@ -22,12 +23,12 @@ public class GroupDialogueMsgDTO implements Serializable {
         this.userId = userId;
     }
 
-    public String getTargetGroupId() {
-        return targetGroupId;
+    public String gettargetUserId() {
+        return targetUserId;
     }
 
-    public void setTargetGroupId(String targetGroupId) {
-        this.targetGroupId = targetGroupId;
+    public void settargetUserId(String targetUserId) {
+        this.targetUserId = targetUserId;
     }
 
     public String getMessage() {

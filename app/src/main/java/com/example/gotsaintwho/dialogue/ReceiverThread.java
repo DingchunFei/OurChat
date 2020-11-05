@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.NotificationTarget;
+import com.example.gotsaintwho.AddGroupActivity;
 import com.example.gotsaintwho.BaseActivity;
 import com.example.gotsaintwho.DialogueActivity;
 //import com.example.gotsaintwho.GlideApp;
@@ -23,6 +24,8 @@ import com.example.gotsaintwho.R;
 import com.example.gotsaintwho.callbackListener.HttpCallbackListener;
 import com.example.gotsaintwho.fragment.ChatListFragment;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
+import com.example.gotsaintwho.pojo.Group;
+import com.example.gotsaintwho.pojo.GroupMsgDBPojo;
 import com.example.gotsaintwho.pojo.Msg;
 import com.example.gotsaintwho.pojo.MsgDBPojo;
 import com.example.gotsaintwho.pojo.User;
@@ -37,6 +40,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +55,7 @@ public class ReceiverThread extends Thread {
     private Socket socket;
 
     private User user;
+    private Group group;
 
     public ReceiverThread(Socket socket) {
         this.socket = socket;
@@ -119,69 +124,178 @@ public class ReceiverThread extends Thread {
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String str = null;
             while ((str = br.readLine()) != null) {
-                Log.d("receiver thread", str);
+
                 dialogueMsgDTO = JsonUtil.json2dialogueMsg(str);
                 System.out.println(dialogueMsgDTO);
-                //将发来的数据放到数据区
-                Msg msg = new Msg(dialogueMsgDTO.getMessage(), Msg.TYPE_RECEIVED);
-                //第一个参数是TargetUserId,第二个参数是userId与TargetUserId的聊天内容
-                Map<String, List<Msg>> msgListMap = BaseActivity.msgListMap;
+                Log.d("receiver thread", dialogueMsgDTO.getMessage());
 
-                //从聊天好友列表中拿到对应用户的聊天list
-                List<Msg> msgs = msgListMap.get(dialogueMsgDTO.getUserId());
-                if(msgs == null){
-                    //说明还未为该用户创建chatList,创建完并放入Map
-                    msgs = new LinkedList<>();
-                    msgListMap.put(dialogueMsgDTO.getUserId(),msgs);
-                }
+                String message = dialogueMsgDTO.getMessage();
 
-                //把服务器发来的数据放到userId与TargetUserId的聊天内容
-                msgs.add(msg);
-                //数据存入sqlite
-                MsgDBPojo msgDBPojo = new MsgDBPojo(msg.getContent(), Msg.TYPE_RECEIVED,dialogueMsgDTO.getUserId());
-                //存入数据库中
-                DBUtil.saveMsgDBPojo(msgDBPojo);
+                // it's a single chat
+                if (message.startsWith("group:-1")) {
+                    //将发来的数据放到数据区
+                    Msg msg = new Msg(message.substring(9), Msg.TYPE_RECEIVED);
+                    //第一个参数是TargetUserId,第二个参数是userId与TargetUserId的聊天内容
+                    Map<String, List<Msg>> msgListMap = BaseActivity.msgListMap;
 
-                //把这个用户信息查询出来
-                user = DBUtil.findUserById(dialogueMsgDTO.getUserId());
-                if(user.getUsername()==null){
-                    //说明数据库中不存在这个用户，从服务器查询对方好友信息
-                    HttpUtil.sendRequestWithHttpURLConnection("user/findUserById", JsonUtil.user2Json(user), new HttpCallbackListener() {
-                        @Override
-                        public void onFinish(String response) {
-                            user = JsonUtil.json2User(response);
-                            //往sqlite中存一份对方用户
-                            DBUtil.saveUser(user);
+                    //从聊天好友列表中拿到对应用户的聊天list
+                    List<Msg> msgs = msgListMap.get(dialogueMsgDTO.getUserId());
+                    if(msgs == null){
+                        //说明还未为该用户创建chatList,创建完并放入Map
+                        msgs = new LinkedList<>();
+                        msgListMap.put(dialogueMsgDTO.getUserId(),msgs);
+                    }
 
-                            /**
-                             * 收到新消息后广播
-                             */
-                            Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
-                            MyApplication.getContext().sendBroadcast(intent);
-                            //发送通知
-                            sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
-                        }
+                    //把服务器发来的数据放到userId与TargetUserId的聊天内容
+                    msgs.add(msg);
+                    //数据存入sqlite
+                    MsgDBPojo msgDBPojo = new MsgDBPojo(msg.getContent(), Msg.TYPE_RECEIVED,dialogueMsgDTO.getUserId());
+                    //存入数据库中
+                    DBUtil.saveMsgDBPojo(msgDBPojo);
 
-                        @Override
-                        public void onError(Exception e) {
+                    //把这个用户信息查询出来
+                    user = DBUtil.findUserById(dialogueMsgDTO.getUserId());
+                    if(user.getUsername()==null){
+                        //说明数据库中不存在这个用户，从服务器查询对方好友信息
+                        HttpUtil.sendRequestWithHttpURLConnection("user/findUserById", JsonUtil.user2Json(user), new HttpCallbackListener() {
+                            @Override
+                            public void onFinish(String response) {
+                                user = JsonUtil.json2User(response);
+                                //往sqlite中存一份对方用户
+                                DBUtil.saveUser(user);
+
+                                /**
+                                 * 收到新消息后广播
+                                 */
+                                Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                                MyApplication.getContext().sendBroadcast(intent);
+                                //发送通知
+                                sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
 /*                                runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(MyApplication.getContext(),"Server error",Toast.LENGTH_SHORT).show();
                                     }
                                 });*/
-                        }
-                    });
-                }else{
-                    /**
-                     * 收到新消息后广播
-                     */
-                    Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
-                    MyApplication.getContext().sendBroadcast(intent);
+                            }
+                        });
+                    }else{
+                        /**
+                         * 收到新消息后广播
+                         */
+                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                        MyApplication.getContext().sendBroadcast(intent);
 
-                    //发送通知
-                    sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
+                        //发送通知
+                        sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
+                    }
                 }
+                //****** group chat *********
+                else {
+                    int ind_1_slash = message.indexOf("/");
+                    int ind_2_slash = message.indexOf("/", message.indexOf("/") + 1);
+                    int ind_1_comma = message.indexOf(",");
+                    int ind_1_colon = message.indexOf(":");
+                    String messageContent = message.substring(ind_2_slash + 1);
+
+                    String groupId = message.substring(ind_1_colon + 1, ind_1_comma);
+                    String groupName = message.substring(ind_1_comma + 1, ind_1_slash);
+                    String groupMembers = message.substring(ind_1_slash + 1, ind_2_slash).split(":")[1];
+                    String[] userIdsInGroup = groupMembers.split(",");
+
+                    String senderUserId = dialogueMsgDTO.getUserId();
+                    Log.d("original message", message);
+                    Log.d("sender user id", senderUserId);
+
+                    //将发来的数据放到数据区
+                    Msg msg = new Msg(DBUtil.findUserById(senderUserId).getUsername() + ": " + messageContent, Msg.TYPE_RECEIVED);
+                    Map<String, List<Msg>> groupMsgListMap = BaseActivity.groupMsgListMap;
+
+                    //从聊天好友列表中拿到对应用户的聊天list
+                    List<Msg> msgs = groupMsgListMap.get(groupId);
+                    if(msgs == null){
+                        //说明还未为该用户创建chatList,创建完并放入Map
+                        msgs = new LinkedList<>();
+                        groupMsgListMap.put(groupId, msgs);
+                    }
+
+                    //把服务器发来的数据放到userId与TargetUserId的聊天内容
+                    msgs.add(msg);
+                    //数据存入sqlite
+                    GroupMsgDBPojo groupMsgDBPojo = new GroupMsgDBPojo(msg.getContent(), Msg.TYPE_RECEIVED, groupId, dialogueMsgDTO.getUserId());
+                    //存入数据库中
+                    DBUtil.saveGroupMsgDBPojo(groupMsgDBPojo);
+
+                    // find the group
+                    this.group = DBUtil.findGroupbyId(groupId);
+                    List<User> usersInGroup= new ArrayList<>();
+
+                    if(this.group == null){
+                        // create the group if it doesn't exist
+                        // find every user in the group
+                        for (String userId: userIdsInGroup) {
+                            user = DBUtil.findUserById(userId);
+
+                            if (user.getUsername() == null) {
+                                //说明数据库中不存在这个用户，从服务器查询对方好友信息
+                                HttpUtil.sendRequestWithHttpURLConnection("user/findUserById", JsonUtil.user2Json(user), new HttpCallbackListener() {
+                                    @Override
+                                    public void onFinish(String response) {
+                                        user = JsonUtil.json2User(response);
+                                        //往sqlite中存一份对方用户
+                                        DBUtil.saveUser(user);
+                                        Log.d("find non user", user.toString());
+
+                                        /**
+                                         * 收到新消息后广播
+                                         */
+                                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                                        MyApplication.getContext().sendBroadcast(intent);
+                                        //发送通知
+                                        sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+/*                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MyApplication.getContext(),"Server error",Toast.LENGTH_SHORT).show();
+                                    }
+                                });*/
+                                    }
+                                });
+                            }
+
+                            else {
+                                /**
+                                 * 收到新消息后广播
+                                 */
+                                Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                                MyApplication.getContext().sendBroadcast(intent);
+
+                                //发送通知
+//                                sendNotification(user.getUserId(),user.getUsername(),messageContent);
+                            }
+
+                            usersInGroup.add(user);
+
+
+                        }
+
+                        // save the new group in database
+                        DBUtil.addUsersInGroup(Integer.parseInt(groupId), groupName, usersInGroup.get(0), usersInGroup);
+
+                    }else{
+                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                        MyApplication.getContext().sendBroadcast(intent);
+                    }
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();

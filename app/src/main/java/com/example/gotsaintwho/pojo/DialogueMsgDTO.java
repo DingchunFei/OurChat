@@ -15,7 +15,7 @@ public class DialogueMsgDTO implements Serializable {
     public DialogueMsgDTO(String userId, String targetUserId, String message) {
         this.userId = userId;
         this.targetUserId = targetUserId;
-        this.message = message;
+        this.message = "group:-1/" + message;
     }
 
     public DialogueMsgDTO() {
