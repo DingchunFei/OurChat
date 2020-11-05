@@ -127,8 +127,8 @@ public class ReceiverThread extends Thread {
 
                 dialogueMsgDTO = JsonUtil.json2dialogueMsg(str);
                 System.out.println(dialogueMsgDTO);
+                Log.d("original message", str);
                 Log.d("receiver thread", dialogueMsgDTO.getMessage());
-
                 String message = dialogueMsgDTO.getMessage();
 
                 // it's a single chat
@@ -208,8 +208,8 @@ public class ReceiverThread extends Thread {
                     String[] userIdsInGroup = groupMembers.split(",");
 
                     String senderUserId = dialogueMsgDTO.getUserId();
-                    Log.d("original message", message);
-                    Log.d("sender user id", senderUserId);
+//                    Log.d("original message", message);
+//                    Log.d("sender user id", senderUserId);
 
                     //将发来的数据放到数据区
                     Msg msg = new Msg(DBUtil.findUserById(senderUserId).getUsername() + ": " + messageContent, Msg.TYPE_RECEIVED);
@@ -237,7 +237,7 @@ public class ReceiverThread extends Thread {
                     if(this.group == null){
                         // create the group if it doesn't exist
                         // find every user in the group
-                        for (String userId: userIdsInGroup) {
+                        for (final String userId: userIdsInGroup) {
                             user = DBUtil.findUserById(userId);
 
                             if (user.getUsername() == null) {
@@ -247,16 +247,11 @@ public class ReceiverThread extends Thread {
                                     public void onFinish(String response) {
                                         user = JsonUtil.json2User(response);
                                         //往sqlite中存一份对方用户
-                                        DBUtil.saveUser(user);
-                                        Log.d("find non user", user.toString());
-
-                                        /**
-                                         * 收到新消息后广播
-                                         */
-                                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
-                                        MyApplication.getContext().sendBroadcast(intent);
-                                        //发送通知
-                                        sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
+                                        // skip the current user
+                                        if (!userId.equals(dialogueMsgDTO.getTargetUserId())) {
+                                            DBUtil.saveUser(user);
+                                            Log.d("find non user cur", userId);
+                                        }
                                     }
 
                                     @Override
@@ -270,26 +265,18 @@ public class ReceiverThread extends Thread {
                                     }
                                 });
                             }
-
-                            else {
-                                /**
-                                 * 收到新消息后广播
-                                 */
-                                Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
-                                MyApplication.getContext().sendBroadcast(intent);
-
-                                //发送通知
-//                                sendNotification(user.getUserId(),user.getUsername(),messageContent);
-                            }
-
                             usersInGroup.add(user);
-
-
                         }
 
                         // save the new group in database
                         DBUtil.addUsersInGroup(Integer.parseInt(groupId), groupName, usersInGroup.get(0), usersInGroup);
-
+                        /**
+                         * 收到新消息后广播
+                         */
+                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                        MyApplication.getContext().sendBroadcast(intent);
+                        //发送通知
+                        sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
                     }else{
                         Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
                         MyApplication.getContext().sendBroadcast(intent);

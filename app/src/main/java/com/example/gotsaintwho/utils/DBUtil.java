@@ -112,6 +112,7 @@ public class DBUtil {
                 String userIds = cursor.getString(cursor.getColumnIndex("user_ids"));
                 String[] usersInGroup = userIds.split(",");
 
+                Log.d("find all groups", String.valueOf(usersInGroup));
                 // only add groups that the current user is in
                 if ( Arrays.asList(usersInGroup).contains(currentUserId) ) {
                     String groupId = cursor.getString(cursor.getColumnIndex("group_id"));
