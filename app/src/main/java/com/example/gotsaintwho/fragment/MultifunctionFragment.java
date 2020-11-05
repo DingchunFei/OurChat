@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.gotsaintwho.GoogleMapActivity;
 import com.example.gotsaintwho.MomentActivity;
 import com.example.gotsaintwho.R;
 import com.example.gotsaintwho.TrackActivity;
@@ -77,6 +79,16 @@ public class MultifunctionFragment extends Fragment {
             @Override
             public void execute() {
                 Intent intent = new Intent(getActivity(), VoiceMemoActivity.class);
+                intent.putExtra("user_info", user);
+                startActivity(intent);
+            }
+        }));
+
+	//第四个是地图
+        multifunctionList.add(new Multifunction("Search", R.drawable.ic_search, new ViewOnClickListener() {
+            @Override
+            public void execute() {
+                Intent intent = new Intent(getActivity(), GoogleMapActivity.class);
                 intent.putExtra("user_info", user);
                 startActivity(intent);
             }
