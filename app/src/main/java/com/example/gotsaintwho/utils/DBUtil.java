@@ -222,6 +222,21 @@ public class DBUtil {
         return msgDBPojoList;
     }
 
+    public static List<GroupMsgDBPojo> findAllMsgDBPojoByTargetGroupId(String groupId) {
+        LinkedList<GroupMsgDBPojo> groupMsgDBPojos = new LinkedList<>();
+        Cursor cursor = db.query("group_msg_db_pojo", null, "targetGroupId=?", new String[]{groupId}, null, null, "id desc");
+        if (cursor.moveToFirst()) {
+            do {
+                String content = cursor.getString(cursor.getColumnIndex("content"));
+                int type = cursor.getInt(cursor.getColumnIndex("type"));
+                String sent_user = cursor.getString(cursor.getColumnIndex("sent_user"));
+                GroupMsgDBPojo groupMsg = new GroupMsgDBPojo(content, type, groupId, sent_user);
+                groupMsgDBPojos.push(groupMsg);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return groupMsgDBPojos;
+    }
 
     public static void saveMsgDBPojo(MsgDBPojo msgDBPojo) {
         ContentValues values = new ContentValues(); // 开始组装第一条数据 values.put("name", "The Da Vinci Code"); values.put("author", "Dan Brown"); values.put("pages", 454);

@@ -60,8 +60,13 @@ public class GroupDialogueActivity extends BaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             //一旦接收到消息传递的广播，就刷新页面！
-            adapter.notifyItemInserted(msgs.size() - 1); // 当有新消息时， 刷新RecyclerView中的显示
-            msgRecyclerView.scrollToPosition(msgs.size() - 1); // 将 RecyclerView定位到最后一行
+            // the group id has to match the current group dialogue activity
+            String groupId = intent.getStringExtra("group_id");
+
+            if (groupId.equals(targetGroup.getGroupId())) {
+                adapter.notifyItemInserted(msgs.size() - 1); // 当有新消息时， 刷新RecyclerView中的显示
+                msgRecyclerView.scrollToPosition(msgs.size() - 1); // 将 RecyclerView定位到最后一行
+            }
         }
     }
 
@@ -91,7 +96,7 @@ public class GroupDialogueActivity extends BaseActivity {
          * resume后开始监听广播
          */
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("com.example.gotsaintwho.ReceiveMsg");
+        intentFilter.addAction("com.example.gotsaintwho.ReceiveGroupMsg");
         msgReceiver = new MsgReceiver();
         registerReceiver(msgReceiver, intentFilter);
     }
@@ -138,11 +143,12 @@ public class GroupDialogueActivity extends BaseActivity {
         msgs = groupMsgListMap.get(currentTargetGroupId);
         if(msgs == null){   //说明这个用户是第一次聊天
             msgs = new LinkedList<>();
-            //看看数据库里有没有之前的聊天记录    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            /*List<MsgDBPojo> allMsgDBPojo = DBUtil.findAllMsgDBPojoByTargetUserId(currentTargetGroupId);
-            for (MsgDBPojo msgDBPojo:allMsgDBPojo){
-                msgs.add(new Msg(msgDBPojo.getContent(),msgDBPojo.getType()));
-            }*/
+            //看看数据库里有没有之前的聊天记录
+            List<GroupMsgDBPojo> allMsgs = DBUtil.findAllMsgDBPojoByTargetGroupId(currentTargetGroupId);
+            for (GroupMsgDBPojo msg: allMsgs){
+                int type = msg.getType();
+                msgs.add(new Msg(msg.getContent(), type));
+            }
             groupMsgListMap.put(currentTargetGroupId, msgs);
         }
 

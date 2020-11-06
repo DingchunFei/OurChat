@@ -207,12 +207,42 @@ public class ReceiverThread extends Thread {
                     String groupMembers = message.substring(ind_1_slash + 1, ind_2_slash).split(":")[1];
                     String[] userIdsInGroup = groupMembers.split(",");
 
-                    String senderUserId = dialogueMsgDTO.getUserId();
+                    final String senderUserId = dialogueMsgDTO.getUserId();
 //                    Log.d("original message", message);
 //                    Log.d("sender user id", senderUserId);
+                    final String[] senderUserName = {""};
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            HttpUtil.sendRequestWithHttpURLConnectionSync("user/findUserById", JsonUtil.user2Json(new User(senderUserId)), new HttpCallbackListener() {
+                                @Override
+                                public void onFinish(String response) {
+                                    user = JsonUtil.json2User(response);
+                                    senderUserName[0] = user.getUsername();
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+/*                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MyApplication.getContext(),"Server error",Toast.LENGTH_SHORT).show();
+                                    }
+                                });*/
+                                }
+                            });
+                        }
+                    });
+
+                    t.start();
+                    try {
+                        t.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     //将发来的数据放到数据区
-                    Msg msg = new Msg(DBUtil.findUserById(senderUserId).getUsername() + ": " + messageContent, Msg.TYPE_RECEIVED);
+                    Msg msg = new Msg(senderUserName[0] + ": " + messageContent, Msg.TYPE_RECEIVED);
                     Map<String, List<Msg>> groupMsgListMap = BaseActivity.groupMsgListMap;
 
                     //从聊天好友列表中拿到对应用户的聊天list
@@ -242,29 +272,42 @@ public class ReceiverThread extends Thread {
 
                             if (user.getUsername() == null) {
                                 //说明数据库中不存在这个用户，从服务器查询对方好友信息
-                                HttpUtil.sendRequestWithHttpURLConnection("user/findUserById", JsonUtil.user2Json(user), new HttpCallbackListener() {
+                                Thread requestThread = new Thread(new Runnable() {
                                     @Override
-                                    public void onFinish(String response) {
-                                        user = JsonUtil.json2User(response);
-                                        //往sqlite中存一份对方用户
-                                        // skip the current user
-                                        if (!userId.equals(dialogueMsgDTO.getTargetUserId())) {
-                                            DBUtil.saveUser(user);
-                                            Log.d("find non user cur", userId);
-                                        }
-                                    }
+                                    public void run() {
+                                        HttpUtil.sendRequestWithHttpURLConnectionSync("user/findUserById", JsonUtil.user2Json(user), new HttpCallbackListener() {
+                                            @Override
+                                            public void onFinish(String response) {
+                                                user = JsonUtil.json2User(response);
+                                                //往sqlite中存一份对方用户
+                                                // skip the current user
+                                                if (!userId.equals(dialogueMsgDTO.getTargetUserId())) {
+                                                    DBUtil.saveUser(user);
+                                                    Log.d("find non user cur", userId);
+                                                }
+                                            }
 
-                                    @Override
-                                    public void onError(Exception e) {
+                                            @Override
+                                            public void onError(Exception e) {
 /*                                runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(MyApplication.getContext(),"Server error",Toast.LENGTH_SHORT).show();
                                     }
                                 });*/
+                                            }
+                                        });
                                     }
                                 });
+
+                                requestThread.start();
+                                try {
+                                    requestThread.join();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
+
                             usersInGroup.add(user);
                         }
 
@@ -273,12 +316,14 @@ public class ReceiverThread extends Thread {
                         /**
                          * 收到新消息后广播
                          */
-                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveGroupMsg");
+                        intent.putExtra("group_id", groupId);
                         MyApplication.getContext().sendBroadcast(intent);
                         //发送通知
                         sendNotification(user.getUserId(),user.getUsername(),dialogueMsgDTO.getMessage());
                     }else{
-                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveMsg");
+                        Intent intent = new Intent("com.example.gotsaintwho.ReceiveGroupMsg");
+                        intent.putExtra("group_id", groupId);
                         MyApplication.getContext().sendBroadcast(intent);
                     }
                 }

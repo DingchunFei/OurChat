@@ -47,6 +47,7 @@ public class ChatListFragment extends Fragment {
     private static ChatItemAdapter adapter = null;
 
     private MsgReceiver msgReceiver;
+    private  MsgReceiver groupMsgReceiver;
 
     @Nullable
     @Override
@@ -84,6 +85,11 @@ public class ChatListFragment extends Fragment {
         intentFilter.addAction("com.example.gotsaintwho.ReceiveMsg");
         msgReceiver = new MsgReceiver();
         getActivity().registerReceiver(msgReceiver, intentFilter);
+
+        IntentFilter groupIntentFilter = new IntentFilter();
+        groupIntentFilter.addAction("com.example.gotsaintwho.ReceiveGroupMsg");
+        groupMsgReceiver = new MsgReceiver();
+        getActivity().registerReceiver(groupMsgReceiver, groupIntentFilter);
     }
 
     @Override
@@ -92,6 +98,10 @@ public class ChatListFragment extends Fragment {
         if(msgReceiver!= null){
             //退出后就取消对广播的监听
             getActivity().unregisterReceiver(msgReceiver);
+        }
+        if(groupMsgReceiver!= null){
+            //退出后就取消对广播的监听
+            getActivity().unregisterReceiver(groupMsgReceiver);
         }
     }
 
