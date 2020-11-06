@@ -8,6 +8,7 @@ import com.example.gotsaintwho.pojo.AllUserIdDTO;
 import com.example.gotsaintwho.pojo.DialogueMsgDTO;
 import com.example.gotsaintwho.pojo.Like;
 import com.example.gotsaintwho.pojo.LikeDTO;
+import com.example.gotsaintwho.pojo.GroupDialogueMsgDTO;
 import com.example.gotsaintwho.pojo.Moment;
 import com.example.gotsaintwho.pojo.MomentIds;
 import com.example.gotsaintwho.pojo.Reply;
@@ -41,6 +42,9 @@ public class JsonUtil {
     }
 
     public static String dialogueMsg2Json(DialogueMsgDTO dialogueMsgDTO) {return gson.toJson(dialogueMsgDTO);}
+
+    public static String dialogueMsg2Json(GroupDialogueMsgDTO groupDialogueMsgDTO) {return gson.toJson(groupDialogueMsgDTO);}
+
 
     public static DialogueMsgDTO json2dialogueMsg(String jsonStr){
         return gson.fromJson(jsonStr, DialogueMsgDTO.class);

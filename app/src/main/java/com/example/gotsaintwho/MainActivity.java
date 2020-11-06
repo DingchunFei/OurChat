@@ -9,6 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -31,6 +32,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //设置toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,12 +88,19 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //从Intent中拿到user用来传给下一个Activity
+        User user = (User) getIntent().getSerializableExtra("user_info");
+        Intent intent;
+
         switch (item.getItemId()) {
             case R.id.add_friend_item:
-                //从Intent中拿到user用来传给下一个Activity
-                User user = (User) getIntent().getSerializableExtra("user_info");
+                intent = new Intent(MainActivity.this, FindUserActivity.class);
+                intent.putExtra("user_info",user);
+                startActivity(intent);
+                break;
 
-                Intent intent = new Intent(MainActivity.this, FindUserActivity.class);
+            case R.id.add_group_item:
+                intent = new Intent(MainActivity.this, AddGroupActivity.class);
                 intent.putExtra("user_info",user);
                 startActivity(intent);
                 break;

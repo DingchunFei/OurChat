@@ -2,31 +2,17 @@ package com.example.gotsaintwho.pojo;
 
 import java.io.Serializable;
 
-public class DialogueMsgDTO implements Serializable {
+public class GroupDialogueMsgDTO implements Serializable {
 
     private String userId;
     private String targetUserId;
     private String message;
 
-    public DialogueMsgDTO(String userId) {
-        this.userId = userId;
-    }
-
-    public DialogueMsgDTO(String userId, String targetUserId, String message) {
+    public GroupDialogueMsgDTO(String userId, String targetUserId, String groupId, String groupName, String groupMemberIds, String message) {
         this.userId = userId;
         this.targetUserId = targetUserId;
-        this.message = "group:-1/" + message;
-    }
 
-    public DialogueMsgDTO() {
-    }
-
-    public String getTargetUserId() {
-        return targetUserId;
-    }
-
-    public void setTargetUserId(String targetUserId) {
-        this.targetUserId = targetUserId;
+        this.message = "group:" + groupId + "," + groupName + "/" + "members:" +  groupMemberIds + "/" + message;
     }
 
     public String getUserId() {
@@ -35,6 +21,14 @@ public class DialogueMsgDTO implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String gettargetUserId() {
+        return targetUserId;
+    }
+
+    public void settargetUserId(String targetUserId) {
+        this.targetUserId = targetUserId;
     }
 
     public String getMessage() {

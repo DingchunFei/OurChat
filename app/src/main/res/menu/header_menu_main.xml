@@ -5,4 +5,9 @@
         android:icon="@drawable/ic_add"
         android:title="Add User"
         app:showAsAction="never" />
+
+    <item android:id="@+id/add_group_item"
+        android:icon="@drawable/ic_add"
+        android:title="Add a group"
+        app:showAsAction="never" />
 </menu>

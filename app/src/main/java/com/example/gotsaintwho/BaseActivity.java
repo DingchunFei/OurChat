@@ -16,9 +16,11 @@ public class BaseActivity  extends AppCompatActivity {
     //第一个参数是TargetUserId,第二个参数是userId与TargetUserId的聊天内容
     //public static Map<String, List<Msg>> msgListMap = new ConcurrentHashMap<>();
     public static Map<String, List<Msg>> msgListMap = new ConcurrentHashMap<>();
+    // <targetGroupId, messages between the current user and target user>
+    public static Map<String, List<Msg>> groupMsgListMap = new ConcurrentHashMap<>();
 
     public static String currentTargetUserId = null;
-
+    public static String currentTargetGroupId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
