@@ -145,21 +145,15 @@ public class TrackActivity extends AppCompatActivity
             }
         });
 
-     /*   stop = findViewById(R.id.stop);
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startTime = System.currentTimeMillis();
-                requestingLocationUpdates = false;
-                onPause();
-            }
-        });*/
 
         myLocationText = findViewById(R.id.myLocation_Text);
         distance = findViewById(R.id.distance);
         step = findViewById(R.id.step);
 
+        // initing sensors
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        // init accelerometer sensor and magnetic field sensor
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
@@ -172,6 +166,7 @@ public class TrackActivity extends AppCompatActivity
 
 
         if (sensorManager != null) {
+            // init step sensor
             stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         }
 
@@ -187,11 +182,12 @@ public class TrackActivity extends AppCompatActivity
         map = googleMap;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
         //    map.setMyLocationEnabled(true);
-            map.getUiSettings().setMyLocationButtonEnabled(true);
+        //    map.getUiSettings().setMyLocationButtonEnabled(true);
             getCurrentLocation();
         }
     }
 
+    //get current location
     private void getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Task<Location> task = client.getLastLocation();
@@ -209,9 +205,7 @@ public class TrackActivity extends AppCompatActivity
                                 // Initialize lat lng
                                 Log.d("getCurrentLocation", points.size() + "");
                                 mLastLocation = location;
-                                //    if(!isPause){
 
-                                //     }
                                 placeMarkerOnMap(location);
 
                             }
@@ -227,6 +221,7 @@ public class TrackActivity extends AppCompatActivity
 
     }
 
+    // location call back
     LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -236,46 +231,42 @@ public class TrackActivity extends AppCompatActivity
                 Location location = locationList.get(locationList.size() - 1);
 
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-           //     getCurrentLocation();
-                //       if(mLastLocation.latitude != location.getLatitude() && points.get(points.size() -1).longitude != location.getLongitude()){
-                //         mLastLocation = location;
-                //    if(map != null){ //prevent crashing if the map doesn't exist yet (eg. on starting activity)
-                //    map.clear();
 
-                         placeMarkerOnMap(location);
+                placeMarkerOnMap(location);
                 Log.e("mLocationCallback", points.size() + "");
-                //         if(!isPause) {
-                //  points.add(latLng);
 
-                //        }
-                //     }
-
-                //   }
 
             }
         }
     };
 
 
+
+    // place maker on the map
     public void placeMarkerOnMap(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (mCurrentMarKer != null) {
             mCurrentMarKer.remove();
             mCurrentMarKer = null;
         }
+
         if (mCurrentMarKer == null) {
 
+            // displaying location details
             String locationDetail = getStreet(TrackActivity.this, latLng.latitude, latLng.longitude);//location.getLatitude(), location.getLongitude())
             myLocationText.setText("Location: " + locationDetail);
 
+            // when start button is clicked, drawing the blue line for the track record.
             if (!isPause) {
                 if (points.size() == 0 || points.size() > 0 && (latLng.latitude != points.get(points.size() - 1).latitude || latLng.longitude != points.get(points.size() - 1).longitude)) {
+                    // calculate the total distance.
                     if(points.size() > 0)
-                     mTotalDistance += (float) getDistance(points.get(points.size() -1),latLng);
+                        mTotalDistance += (float) getDistance(points.get(points.size() -1),latLng);
 
                     points.add(latLng);
                     map.clear();
 
+                    // draw a poly line
                     mutablePolyline = map.addPolyline(new PolylineOptions()
                             .color(Color.BLUE)
                             .width(30)
@@ -287,8 +278,6 @@ public class TrackActivity extends AppCompatActivity
             mCurrentMarKer = map.addMarker(new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)).anchor(0.5f, 0.5f));
 
             mCurrentMarKer.setPosition(latLng);
-
-      //      Toast.makeText(getApplicationContext(), "lastRotateDegree: "+lastRotateDegree , Toast.LENGTH_LONG).show();
 
             updateCameraBearing(map, -lastRotateDegree, location);
 
@@ -352,15 +341,17 @@ public class TrackActivity extends AppCompatActivity
         }
     }
 
+    // location update request
     protected LocationRequest createLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5000); //间隔10s
-        locationRequest.setFastestInterval(2000); //可以处理的最快间隔
+        locationRequest.setInterval(5000); // interval 5s
+        locationRequest.setFastestInterval(2000); //the fastest request
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
 
 
+    // update camera
     private void updateCameraBearing(GoogleMap googleMap, float bearing, Location position) {
         if (googleMap == null) return;
         LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
@@ -377,23 +368,22 @@ public class TrackActivity extends AppCompatActivity
     }
 
 
+    // updating location
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            client.requestLocationUpdates(locationRequest,
+                    locationCallback,
+                    null /* Looper */);
+        } else {
+            ActivityCompat.requestPermissions(TrackActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
-        client.requestLocationUpdates(locationRequest,
-                locationCallback,
-                null /* Looper */);
+
     }
 
 
+    /**
+     * unregister the sensors of accelerometer and magneticfield
+     */
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this,
@@ -403,11 +393,16 @@ public class TrackActivity extends AppCompatActivity
     }
 
 
+    /**
+     * getting step, rotate degree and timer.
+     * @param sensorEvent
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
         switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_STEP_COUNTER:
+                // dispalying the total step
                 step.setText("Total Step: " + sensorEvent.values[0]);
                 break;
             case Sensor.TYPE_ACCELEROMETER:
@@ -424,6 +419,7 @@ public class TrackActivity extends AppCompatActivity
                 valuesAccelerometer,
                 valuesMagneticField);
 
+        // retate degree from accelerometer and magneticField sensors
         if (success) {
             SensorManager.getOrientation(matrixR, matrixValues);
 
@@ -435,7 +431,7 @@ public class TrackActivity extends AppCompatActivity
                 animation.setFillAfter(true);
             }
 
-
+            // setting timer
             if (!isPause) {
                 totalMilliSeconds =
                         System.currentTimeMillis() + mTotalTimes - startTime;
@@ -451,17 +447,17 @@ public class TrackActivity extends AppCompatActivity
             long totalHour = totalMinutes / 60;
             long currentHour = totalHour % 24;
 
+            // Setting distance and timer on the screen
             distance.setText("Distance: " + mTotalDistance + "\nTimer: " + currentHour + ":" + currentMinute + ":" + currentSecond);
-           // if(lastRotateDegree - rotateDegree  > 10){
-                lastRotateDegree = rotateDegree;
 
-         //   }
-
+            // setting retate degree for the camera
+            lastRotateDegree = rotateDegree;
 
         }
 
     }
 
+    // get distance between two GPS locations
     public double getDistance(LatLng start,LatLng end){
         double lat1 = (Math.PI/180)*start.latitude;
         double lat2 = (Math.PI/180)*end.latitude;
@@ -469,17 +465,13 @@ public class TrackActivity extends AppCompatActivity
         double lon1 = (Math.PI/180)*start.longitude;
         double lon2 = (Math.PI/180)*end.longitude;
 
-//      double Lat1r = (Math.PI/180)*(gp1.getLatitudeE6()/1E6);
-//      double Lat2r = (Math.PI/180)*(gp2.getLatitudeE6()/1E6);
-//      double Lon1r = (Math.PI/180)*(gp1.getLongitudeE6()/1E6);
-//      double Lon2r = (Math.PI/180)*(gp2.getLongitudeE6()/1E6);
-
-        //地球半径
+        //Radius of the Earth
         double R = 6371;
 
-        //两点间距离 km，如果想要米的话，结果*1000就可以了
+        // distance between two locations (KM)
         double d =  Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*R;
 
+        // distance between two location (m)
         return d*1000;
     }
 
