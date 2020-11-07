@@ -345,7 +345,7 @@ public class TrackActivity extends AppCompatActivity
     protected LocationRequest createLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setInterval(5000); // interval 5s
-        locationRequest.setFastestInterval(2000); //the fastest request
+        locationRequest.setFastestInterval(5000); //the fastest request
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
@@ -371,12 +371,11 @@ public class TrackActivity extends AppCompatActivity
     // updating location
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            client.requestLocationUpdates(locationRequest,
-                    locationCallback,
-                    null /* Looper */);
-        } else {
-            ActivityCompat.requestPermissions(TrackActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+            return;
         }
+        client.requestLocationUpdates(locationRequest,
+                locationCallback,
+                null /* Looper */);
 
     }
 
