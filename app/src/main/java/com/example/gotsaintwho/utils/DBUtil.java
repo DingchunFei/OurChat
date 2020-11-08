@@ -22,7 +22,7 @@ public class DBUtil {
     private static SQLiteDatabase db = null;
 
     static {
-        db = new MyDatabaseHelper(MyApplication.getContext(), "OurChat.db", null, 5).getWritableDatabase();
+        db = new MyDatabaseHelper(MyApplication.getContext(), "OurChat.db", null, 6).getWritableDatabase();
     }
 
     public static boolean existUser(String userId) {
