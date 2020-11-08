@@ -103,11 +103,14 @@ public class TrackActivity extends AppCompatActivity
     private Sensor sensorMagneticField;
     private float mTotalDistance;
     private long mTotalTimes;
-    private int mTotalStep;
+    private int mTotalStep = 0;
+    private int TotalSteps = 0;
 
     private float[] valuesAccelerometer;
     private float[] valuesMagneticField;
     private long totalMilliSeconds = 0;
+
+    private LocationCallback mLocationCallback;
 
 
     private float[] matrixR;
@@ -134,6 +137,7 @@ public class TrackActivity extends AppCompatActivity
                     startTime = System.currentTimeMillis();
                     start.setText("PAUSE");
                     isPause = false;
+
                     onResume();
                 } else {
                     isPause = true;
@@ -145,6 +149,7 @@ public class TrackActivity extends AppCompatActivity
             }
         });
 
+        TotalSteps = 0;
 
         myLocationText = findViewById(R.id.myLocation_Text);
         distance = findViewById(R.id.distance);
@@ -173,18 +178,37 @@ public class TrackActivity extends AppCompatActivity
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // location call back
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                List<Location> locationList = locationResult.getLocations();
+                if (locationList.size() > 0) {
+                    //The last location in the list is the newest
+                    Location location = locationList.get(locationList.size() - 1);
+                    mLastLocation = location;
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
+                    placeMarkerOnMap(location);
+                    Log.e("mLocationCallback", points.size() + "");
+                }
+            }
+        };
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-        //    map.setMyLocationEnabled(true);
-        //    map.getUiSettings().setMyLocationButtonEnabled(true);
+            //    map.setMyLocationEnabled(true);
+            //    map.getUiSettings().setMyLocationButtonEnabled(true);
             getCurrentLocation();
+        } else {
+            ActivityCompat.requestPermissions(TrackActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
+
     }
 
     //get current location
@@ -213,6 +237,7 @@ public class TrackActivity extends AppCompatActivity
                     } else {
                         myLocationText.setText("Get location failed.");
                     }
+
                 }
             });
         } else {
@@ -220,26 +245,6 @@ public class TrackActivity extends AppCompatActivity
         }
 
     }
-
-    // location call back
-    LocationCallback mLocationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            List<Location> locationList = locationResult.getLocations();
-            if (locationList.size() > 0) {
-                //The last location in the list is the newest
-                Location location = locationList.get(locationList.size() - 1);
-
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-                placeMarkerOnMap(location);
-                Log.e("mLocationCallback", points.size() + "");
-
-
-            }
-        }
-    };
-
 
 
     // place maker on the map
@@ -258,11 +263,11 @@ public class TrackActivity extends AppCompatActivity
 
             // when start button is clicked, drawing the blue line for the track record.
             if (!isPause) {
-                if (points.size() == 0 || points.size() > 0 && (latLng.latitude != points.get(points.size() - 1).latitude || latLng.longitude != points.get(points.size() - 1).longitude)) {
-                    // calculate the total distance.
-                    if(points.size() > 0)
-                        mTotalDistance += (float) getDistance(points.get(points.size() -1),latLng);
+                points.add(latLng);
 
+                if (points.size() > 1 && (latLng.latitude != points.get(points.size() - 2).latitude || latLng.longitude != points.get(points.size() - 2).longitude)) {
+
+                    mTotalDistance += (float) getDistance(points.get(points.size() - 2), latLng);
                     points.add(latLng);
                     map.clear();
 
@@ -274,10 +279,12 @@ public class TrackActivity extends AppCompatActivity
                             .addAll(points));
 
                 }
+
             }
             mCurrentMarKer = map.addMarker(new MarkerOptions().position(latLng).title("I'm here").icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)).anchor(0.5f, 0.5f));
 
             mCurrentMarKer.setPosition(latLng);
+
 
             updateCameraBearing(map, -lastRotateDegree, location);
 
@@ -345,7 +352,7 @@ public class TrackActivity extends AppCompatActivity
     protected LocationRequest createLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setInterval(5000); // interval 5s
-        locationRequest.setFastestInterval(5000); //the fastest request
+        locationRequest.setFastestInterval(2000); //the fastest request
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
@@ -370,7 +377,15 @@ public class TrackActivity extends AppCompatActivity
 
     // updating location
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         client.requestLocationUpdates(locationRequest,
@@ -389,11 +404,15 @@ public class TrackActivity extends AppCompatActivity
                 sensorAccelerometer);
         sensorManager.unregisterListener(this,
                 sensorMagneticField);
+        sensorManager.unregisterListener(this,
+                stepSensor);
+
     }
 
 
     /**
      * getting step, rotate degree and timer.
+     *
      * @param sensorEvent
      */
     @Override
@@ -401,8 +420,13 @@ public class TrackActivity extends AppCompatActivity
 
         switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_STEP_COUNTER:
-                // dispalying the total step
-                step.setText("Total Step: " + sensorEvent.values[0]);
+                if (!isPause) {
+                    TotalSteps = (int) sensorEvent.values[0];
+                    if (mTotalStep == 0 && !isPause) {
+                        mTotalStep = TotalSteps;
+                    }
+
+                }
                 break;
             case Sensor.TYPE_ACCELEROMETER:
                 valuesAccelerometer = sensorEvent.values.clone();
@@ -423,11 +447,14 @@ public class TrackActivity extends AppCompatActivity
             SensorManager.getOrientation(matrixR, matrixValues);
 
             float rotateDegree = -(float) Math.toDegrees(matrixValues[0]);
-            if (Math.abs(rotateDegree - lastRotateDegree) > 1) {
+            if (Math.abs(rotateDegree - lastRotateDegree) > 20) {
                 RotateAnimation animation = new RotateAnimation
                         (lastRotateDegree, rotateDegree, Animation.RELATIVE_TO_SELF, 0.5f, Animation.
                                 RELATIVE_TO_SELF, 0.5f);
                 animation.setFillAfter(true);
+
+
+
             }
 
             // setting timer
@@ -452,26 +479,29 @@ public class TrackActivity extends AppCompatActivity
             // setting retate degree for the camera
             lastRotateDegree = rotateDegree;
 
+            // dispalying the total step
+            step.setText("Total Step: " + (TotalSteps - mTotalStep));
+
         }
 
     }
 
     // get distance between two GPS locations
-    public double getDistance(LatLng start,LatLng end){
-        double lat1 = (Math.PI/180)*start.latitude;
-        double lat2 = (Math.PI/180)*end.latitude;
+    public double getDistance(LatLng start, LatLng end) {
+        double lat1 = (Math.PI / 180) * start.latitude;
+        double lat2 = (Math.PI / 180) * end.latitude;
 
-        double lon1 = (Math.PI/180)*start.longitude;
-        double lon2 = (Math.PI/180)*end.longitude;
+        double lon1 = (Math.PI / 180) * start.longitude;
+        double lon2 = (Math.PI / 180) * end.longitude;
 
         //Radius of the Earth
         double R = 6371;
 
         // distance between two locations (KM)
-        double d =  Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*R;
+        double d = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1)) * R;
 
         // distance between two location (m)
-        return d*1000;
+        return d * 1000;
     }
 
     @Override
@@ -479,5 +509,13 @@ public class TrackActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
 
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+        client.removeLocationUpdates(locationCallback);
+    }
 }
