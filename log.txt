@@ -1,0 +1,336 @@
+commit da592ee28ae9309186e2ed1546e9231ef62d0d15
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Fri Nov 6 19:55:02 2020 +1100
+
+    crashing bug fixed
+
+commit 8b65da2262c1d9e49fb7b99bda0149d2339761c8
+Merge: 68f14ca fb2c917
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Fri Nov 6 15:08:48 2020 +1100
+
+    merged group chat
+
+commit fb2c9174c10ca6bbdc8e35473814ba8920e71342
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Fri Nov 6 15:02:31 2020 +1100
+
+    manifest file updated
+
+commit 05f26d68c2c68f8b5487c3fc1ca7d3034920c422
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Fri Nov 6 02:43:38 2020 +1100
+
+    remove refresh database line
+
+commit 46899e91c327e0fefc3cb095d6c9c1ba06764f2a
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Fri Nov 6 02:13:36 2020 +1100
+
+    fixed crashing bug
+
+commit 43c6e196081de5f8766d1283433d91daff2fe773
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Fri Nov 6 01:09:02 2020 +1100
+
+    fix null pointer bug
+
+commit 68f14ca3b64ec6936c270c111250d7c2dbdc8030
+Merge: 9973bbb 80fafc6
+Author: richard562 <56013498+richard562@users.noreply.github.com>
+Date:   Thu Nov 5 22:34:36 2020 +1100
+
+    Merge pull request #5 from DingchunFei/search_v2
+    
+    merge search to master
+
+commit 80fafc68c5e597025e2d05aaad84f4cf14ff4255
+Author: richard562 <56013498+richard562@users.noreply.github.com>
+Date:   Thu Nov 5 22:33:11 2020 +1100
+
+    search_v2 upload
+
+commit 9973bbbb0f418b9fb3ee7d019795a95d7b8773ae
+Merge: 84509e5 536dc68
+Author: Olivia <55537942+Olivia0012@users.noreply.github.com>
+Date:   Thu Nov 5 15:43:47 2020 +1100
+
+    Merge pull request #2 from DingchunFei/track
+    
+    Merge
+
+commit 536dc684eb19a76efe17b934c8b5b834ba18bd03
+Author: Olivia0012 <lu.wang4@student.unimelb.edu.au>
+Date:   Thu Nov 5 15:42:11 2020 +1100
+
+    Merge
+
+commit 396ea44b77123f18bf7dfa33c5033fc864410a7e
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Thu Nov 5 02:47:59 2020 +1100
+
+    sender thread finished
+
+commit 6c575f5839d97f4b1ca48c0f5247a6e1cc0f9101
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Wed Nov 4 22:57:09 2020 +1100
+
+    group diaglogue sender finished
+
+commit 84509e525e8655927f1b23ce3c1a5cb692677014
+Author: Olivia <55537942+Olivia0012@users.noreply.github.com>
+Date:   Wed Nov 4 20:48:59 2020 +1100
+
+    Update MultifunctionFragment.java
+
+commit 4ba4be77eab4e29fd885ca8ff32b3a4770e3ce9d
+Merge: 799db0f 61e38b2
+Author: Olivia <55537942+Olivia0012@users.noreply.github.com>
+Date:   Wed Nov 4 20:33:49 2020 +1100
+
+    Merge pull request #1 from DingchunFei/track
+    
+    Track
+
+commit 61e38b277b7e7f71ba369dda7d1cbb762639bf8e
+Merge: 8b3621f 799db0f
+Author: Olivia0012 <lu.wang4@student.unimelb.edu.au>
+Date:   Wed Nov 4 20:32:42 2020 +1100
+
+    merge to master: solve conflict
+
+commit 8b3621ffbe3b67ba1dbcb0a646735061d468d6f5
+Author: Olivia0012 <lu.wang4@student.unimelb.edu.au>
+Date:   Wed Nov 4 20:27:21 2020 +1100
+
+    updated track
+
+commit 799db0f5d780bd65671e6325d23f368de0f08674
+Merge: 8950021 9161947
+Author: kandoka <kandoka@126.com>
+Date:   Wed Nov 4 15:11:11 2020 +0800
+
+    Merge branch 'comment'
+
+commit 91619476510413676cc43d0db7856747277c9a25
+Author: kandoka <kandoka@126.com>
+Date:   Wed Nov 4 15:08:29 2020 +0800
+
+    change url
+
+commit 0e9430bea11fb8bb72ef6e879388d1734a4304d4
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Wed Nov 4 17:55:53 2020 +1100
+
+    creat group and store group info in sqlite database
+
+commit cb2a196ece97c9e48ebffc07311ca5ee1e0a96fe
+Author: rmit-s3628532-jia-yin <willjiay@163.com>
+Date:   Wed Nov 4 02:58:32 2020 +1100
+
+    add group activity and database related operations
+
+commit 8950021a937ef2b4e4c0a2788f51f53ff47c4589
+Author: maxrere <maxrere4@gmail.com>
+Date:   Tue Nov 3 17:26:02 2020 +0800
+
+    update layout
+
+commit 55a1cc44b3f7f9f592c7dba356153f389055a731
+Author: maxrere <maxrere4@gmail.com>
+Date:   Tue Nov 3 15:56:45 2020 +0800
+
+    audioFeature complete
+
+commit a46f39eb1dff6a96a16349ab91c03e7cfa0e8a77
+Author: Olivia0012 <lu.wang4@student.unimelb.edu.au>
+Date:   Tue Nov 3 12:02:31 2020 +1100
+
+    features for track
+
+commit 2d1973d4226ea874532bd952bbf1cb9dcae76484
+Author: kandoka <kandoka@126.com>
+Date:   Mon Nov 2 15:09:07 2020 +0800
+
+    fix
+
+commit 9ad4c2c9a4afe2fb05b417d1bc70f5b4d2bc82e8
+Author: kandoka <kandoka@126.com>
+Date:   Mon Nov 2 14:39:11 2020 +0800
+
+    complete reply to moment
+
+commit 770d9aa26bd3b4adecf8c99b5bd3f67b5cbbe9c2
+Author: kandoka <kandoka@126.com>
+Date:   Sun Nov 1 20:54:01 2020 +0800
+
+    try reply
+
+commit 802ecb33a725700618e6ffe5b9d4be2327ce156f
+Author: kandoka <kandoka@126.com>
+Date:   Sun Nov 1 17:42:09 2020 +0800
+
+    complete like fun
+
+commit 7f38aff9f50f4ab807912fd4d928463db59ceda4
+Author: kandoka <kandoka@126.com>
+Date:   Sat Oct 31 12:48:51 2020 +0800
+
+    like list
+
+commit ba9b7c6346af1317766d9ebb28e41e5e043c1749
+Author: maxrere <maxrere4@gmail.com>
+Date:   Thu Oct 29 21:44:35 2020 +0800
+
+    AudioPlayerLayout
+
+commit 81978867c24600de2d0aede83082e198463927f6
+Author: maxrere <maxrere4@gmail.com>
+Date:   Thu Oct 29 21:12:22 2020 +0800
+
+    playAudio
+
+commit fc38c30d76c044482e8e7b80ab5575f91f4a8309
+Author: kandoka <kandoka@126.com>
+Date:   Thu Oct 29 15:35:36 2020 +0800
+
+    like fun
+
+commit d219d8897265ea98bd2a51068d20da5538929edf
+Author: kandoka <kandoka@126.com>
+Date:   Wed Oct 28 10:22:47 2020 +0800
+
+    comment icon
+
+commit e09451e1c83ff342d1c9031960f4dbf1e390af86
+Author: maxrere <maxrere4@gmail.com>
+Date:   Tue Oct 27 03:25:56 2020 +0800
+
+    caculate how long the audio have been created
+
+commit 2e2100a48df81e2bf86b1125a4f04bd022ecdd5b
+Author: maxrere <maxrere4@gmail.com>
+Date:   Tue Oct 27 03:12:47 2020 +0800
+
+    allAudioFiles in the recycleview
+
+commit 1e1085246365439a18f2403a39c696eca5f21586
+Author: maxrere <maxrere4@gmail.com>
+Date:   Tue Oct 27 01:37:31 2020 +0800
+
+    musicPlayerLayout always show up
+
+commit 79b3fefe4d77c131097cf642c792f4e85ce98cdf
+Author: maxrere <maxrere4@gmail.com>
+Date:   Tue Oct 27 00:33:10 2020 +0800
+
+    Layout setup and audio setup again no error
+
+commit 93b8f66b2426234ae8720b4243a4d956c4635883
+Author: maxrere <maxrere4@gmail.com>
+Date:   Tue Oct 27 00:31:14 2020 +0800
+
+    Layout setup and audio setup
+
+commit fa309b86ab9e86648e6ccdf535ddddddce6ecb59
+Author: dingchun <dingchun0516@gmail.com>
+Date:   Tue Sep 15 13:55:47 2020 +1000
+
+    test for tortoise
+
+commit c9a585d6d190578ebbedad29a82b4fc5b18408e3
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Tue Sep 15 12:46:34 2020 +1000
+
+    trivial change
+
+commit b92ffef62bb447308594dabd44646495434137a7
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Mon Sep 14 22:00:52 2020 +1000
+
+    change launchMode of DialogueActivity
+
+commit 9c3dd3841024c44961032e36a06710994f16e85f
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Sat Sep 12 23:37:57 2020 +1000
+
+    menu layout updated
+
+commit 8b7e3d5e51f3c1657a6d77a94ffa4180e549ca49
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Sat Sep 12 14:25:12 2020 +1000
+
+    trivial change
+
+commit f97a528b5f935dcaa9b8acf0376dbdf2dea6e86c
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Sat Sep 12 10:59:57 2020 +1000
+
+    logo v1.1
+
+commit dce58f21b6a3d94b51ce4d0e54d38d0bfa096f62
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Sat Sep 12 00:26:59 2020 +1000
+
+    logo changed
+
+commit af1b7dc8c17316655b4e9062232e145d35d8e601
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Fri Sep 11 17:57:35 2020 +1000
+
+    Colour Theme
+
+commit 1a1900e5dbdef009e97d0c797a89927dff95a282
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Fri Sep 11 16:54:45 2020 +1000
+
+    Notification responsiveness complete
+
+commit 6be2b23904d6826848ac1f0efd157375d2e9526b
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Fri Sep 11 16:19:04 2020 +1000
+
+    notification popup
+
+commit 637caf837dd3d06b0eb9cd9b45856dccded73689
+Merge: 5ed4985 5769008
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Fri Sep 11 11:10:33 2020 +1000
+
+    Merge branch 'dingchun_app'
+
+commit 5ed4985719ca76b025a75432d7e370e63a25b443
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Fri Sep 11 11:09:24 2020 +1000
+
+    small change
+
+commit 5769008c58e3c6de663022346ae9246b22eeb3e1
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Fri Sep 11 11:07:03 2020 +1000
+
+    small change
+
+commit 7404c63330eabd17709574a938577914883f454c
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Wed Sep 9 23:46:40 2020 +1000
+
+    moment v1.1 完成
+
+commit 938026c9bcec0a8858d7dc2ae1a1f843c43523f5
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Wed Sep 9 21:49:14 2020 +1000
+
+    moment v1.0 完成
+
+commit 36367547b851467b13df750f7873832d4dd4bf22
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Tue Sep 8 12:09:07 2020 +1000
+
+    拍照+相册
+
+commit e14f141ddc8b0549da1a639670e9655db03fcad5
+Author: dfei <dfei@student.unimelb.edu.au>
+Date:   Sat Sep 5 13:15:35 2020 +1000
+
+    加载网络图像未完成
