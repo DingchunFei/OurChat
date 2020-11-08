@@ -29,7 +29,11 @@ public class SenderThread extends Thread {
                     //send the data to server
                     out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                     out.println(msg);
+
                     out.flush();
+
+                    Log.d("sender thread", msg);
+
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }

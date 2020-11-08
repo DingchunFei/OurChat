@@ -24,6 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private List<User> mUserList;
+    public static final String TAG = "UserAdapter";
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView item_user_image;

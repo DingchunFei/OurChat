@@ -94,6 +94,60 @@ public class HttpUtil {
         }).start();
     }
 
+    public static void sendRequestWithHttpURLConnectionSync(final String uriStr, final String jsonStr, final HttpCallbackListener listener) {
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+        try {
+            String urlStr = ParamUtil.URI + uriStr;
+            URL url = new URL(urlStr);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setConnectTimeout(8000);
+            connection.setReadTimeout(8000);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            // 设置contentType
+            connection.setRequestProperty("Content-Type", "application/json");
+            DataOutputStream os = new DataOutputStream(connection.getOutputStream());
+            os.writeBytes(jsonStr);
+            os.flush();
+            os.close();
+            //连接
+            connection.connect();
+            //得到响应码
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 下面对获取到的输入流进行读取
+                InputStream in = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                if (listener != null) {
+                    listener.onFinish(response.toString());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (listener != null) { // 回调onError()方法
+                listener.onError(e);
+            }
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
     public static void uploadFile(String userId, String path, String url) throws Exception {
         File file = new File(path);
         if (file.exists() && file.length() > 0) {
